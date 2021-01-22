@@ -6,32 +6,22 @@ const port = process.env.PORT || 3000;
 
 app.use(express.static('public'));
 
-app.get('/random', (req, res) => {
-  let rand = Math.random();
-  res.json({
-    data: rand
-  })
-})
-// app.get('/', (req, res) => {
-//   res.sendFile(__dirname + '/index.html');
-// });
-
-// app.get('/style.css', (req, res) => {
-//   res.sendFile(__dirname + '/style.css');
-// })
-
-
 io.on('connection', (socket) => {
   console.log('a user connected');
 
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
-  socket.on('chat message', msg => {
-    console.log('message: ' + msg);
-    io.emit('chat message', msg);
+
+  socket.on('VIDEO_LOAD', data => {
+    console.log('data: ' + JSON.stringify(data));
+    io.emit('VIDEO_LOAD', data);
   });
 
+  socket.on('VIDEO_PLAY', data => {
+    console.log('data: ' + JSON.stringify(data));
+    io.emit('VIDEO_PLAY', data);
+  });
 });
 
 http.listen(port, () => {
