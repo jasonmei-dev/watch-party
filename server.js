@@ -13,14 +13,20 @@ io.on('connection', (socket) => {
     console.log('user disconnected');
   });
 
-  socket.on('VIDEO_LOAD', data => {
-    console.log('data: ' + JSON.stringify(data));
+  socket.on('VIDEO_LOAD', (data) => {
     io.emit('VIDEO_LOAD', data);
   });
 
-  socket.on('VIDEO_PLAY', data => {
-    console.log('data: ' + JSON.stringify(data));
+  socket.on('VIDEO_PLAY', (data) => {
     io.emit('VIDEO_PLAY', data);
+  });
+
+  socket.on('VIDEO_PAUSE', (data) => {
+    io.emit('VIDEO_PAUSE', data);
+  });
+
+  socket.on('VIDEO_STOP', (data) => {
+    io.emit('VIDEO_STOP', data);
   });
 });
 
