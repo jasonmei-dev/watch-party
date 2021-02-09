@@ -14,18 +14,27 @@ io.on('connection', (socket) => {
   });
 
   socket.on('VIDEO_LOAD', (data) => {
+    console.log(data);
     io.emit('VIDEO_LOAD', data);
   });
 
   socket.on('VIDEO_PLAY', (data) => {
+    console.log(data);
     io.emit('VIDEO_PLAY', data);
   });
 
   socket.on('VIDEO_PAUSE', (data) => {
+    console.log(data);
     io.emit('VIDEO_PAUSE', data);
   });
 
+  socket.on('VIDEO_SCRUB', (data) => {
+    console.log(data);
+    io.emit('VIDEO_SCRUB', data);
+  });
+
   socket.on('VIDEO_STOP', (data) => {
+    console.log(data);
     io.emit('VIDEO_STOP', data);
   });
 });
