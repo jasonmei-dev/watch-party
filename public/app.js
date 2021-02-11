@@ -1,7 +1,5 @@
 let player;
 let youtubePlayer;
-// let serverPause = false;
-// let serverPlay = false;
 let serverEvent = false;
 
 // SOCKET stuff
@@ -15,20 +13,19 @@ socket.on('VIDEO_LOAD', (data) => {
 socket.on('VIDEO_PLAY', (data) => {
   console.log(data);
   player.playVideo();
-  // serverPlay = true;
   serverEvent = true;
 });
 
 socket.on('VIDEO_PAUSE', (data) => {
   console.log(data);
   player.pauseVideo(); // triggers player state change from 1 -> 2
-  // serverPause = true;
   serverEvent = true;
 });
 
 socket.on('VIDEO_SCRUB', (data) => {
   console.log(data);
   player.seekTo(data.scrubTime);
+  serverEvent = true;
   // scrubVideo(data.scrubTime);
 });
 
@@ -113,35 +110,30 @@ function onPlayerReady() {
 function onPlayerStateChange(event) {
   console.log(event.data)
 
-  if (event.data === 1) {
-    // socket.emit('VIDEO_PLAY', { event: "play" }); 
-
+  if (event.data === 1) { // PLAY
     if (!serverEvent) {
       socket.emit('VIDEO_PLAY', { event: "play" });
     }
 
-    // serverPlay = false;
     serverEvent = false;
 
-  } else if (event.data === 2) {
-    // socket.emit('VIDEO_PAUSE', { event: "pause" }); 
-
-    // if state change is from server - do not socket.emit
-    // how does onPlayerStateChange know if it's from server or user?
-    // if state change value is coming from socket.on, then do not socket.emit
-    // How do we check if state change value is coming from socket.on?
-
+  } else if (event.data === 2) { // PAUSE
     if (!serverEvent) {
       socket.emit('VIDEO_PAUSE', { event: "pause" }); 
     }
     
-    // serverPause = false;
     serverEvent = false;
 
-  // } else if (event.data === 3) {
-  //   let time = player.getCurrentTime();
-  //   console.log('Buffering...' + time);
-  //   socket.emit('VIDEO_SCRUB', { event: "scrub", scrubTime: time });
+  } else if (event.data === 3) { // BUFFERING
+    let time = player.getCurrentTime();
+    console.log('Buffering...' + time);
+    // socket.emit('VIDEO_SCRUB', { event: "scrub", scrubTime: time });
+    
+    if (!serverEvent) {
+      socket.emit('VIDEO_SCRUB', { event: "scrub", scrubTime: time });
+    }
+
+    serverEvent = false;
   }
 }
 

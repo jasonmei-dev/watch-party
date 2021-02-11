@@ -30,7 +30,7 @@ io.on('connection', (socket) => {
 
   socket.on('VIDEO_SCRUB', (data) => {
     console.log(data);
-    io.emit('VIDEO_SCRUB', data);
+    socket.broadcast.emit('VIDEO_SCRUB', data);
   });
 
   socket.on('VIDEO_STOP', (data) => {
