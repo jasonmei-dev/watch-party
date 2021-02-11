@@ -1,6 +1,7 @@
 let player;
 let youtubePlayer;
-let serverPaused;
+let serverPause = false;
+let serverPlay = false;
 
 // SOCKET stuff
 const socket = io(); // Establish socket connection
@@ -8,18 +9,18 @@ const socket = io(); // Establish socket connection
 socket.on('VIDEO_LOAD', (data) => {
   console.log(data);
   player.cueVideoById(data.videoId);
-  // if user.id is not
 });
 
 socket.on('VIDEO_PLAY', (data) => {
   console.log(data);
   player.playVideo();
+  serverPlay = true;
 });
 
 socket.on('VIDEO_PAUSE', (data) => {
   console.log(data);
-  player.pauseVideo();
-  serverPaused = true;
+  player.pauseVideo(); // triggers player state change from 1 -> 2
+  serverPause = true;
 });
 
 socket.on('VIDEO_SCRUB', (data) => {
@@ -33,12 +34,11 @@ socket.on('VIDEO_STOP', (data) => {
   player.stopVideo();
 });
 
-// Play button
-const $play = document.querySelector('.js-play');
-$play.addEventListener('click', () => {
-  console.log('123');
-  
-});
+// // Play button
+// const $play = document.querySelector('.js-play');
+// $play.addEventListener('click', () => {
+//   socket.emit('VIDEO_PLAY', { event: "play" });
+// });
 
 // // Pause button
 // const $pause = document.querySelector('.js-pause');
@@ -81,7 +81,6 @@ function getYouTubeId(url) {
   return myParam;
 }
 
-
 // Load IFrame Player API code
 let tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
@@ -95,8 +94,7 @@ function onYouTubeIframeAPIReady() {
     height: '390',
     width: '640',
     playerVars: {
-      'enablejsapi': 1,
-      // 'controls': 0
+      'mute': 1
     },
     events: {
       onReady: onPlayerReady,
@@ -104,14 +102,6 @@ function onYouTubeIframeAPIReady() {
     }
   });
 }
-
-// youtubePlayer = document.querySelector("iframe");
-// const controls = youtubePlayer.querySelector(".ytp-chrome-controls");
-// const playButton = controls.querySelector(".ytp-play-button");
-
-// playButton.addEventListener('click', () => {
-//   socket.emit('VIDEO_PLAY', {});
-// });
 
 function onPlayerReady() {
   console.log('Youtube player is ready');
@@ -121,17 +111,27 @@ function onPlayerStateChange(event) {
   console.log(event.data)
 
   if (event.data === 1) {
-    socket.emit('VIDEO_PLAY', { event: "play" }); // Why is there a delay on play? 
+    socket.emit('VIDEO_PLAY', { event: "play" }); 
+
+    // if (!serverPlay) {
+    //   socket.emit('VIDEO_PLAY', { event: "play" });
+    // }
+
+    // serverPlay = false;
+
   } else if (event.data === 2) {
+    // socket.emit('VIDEO_PAUSE', { event: "pause" }); 
+
     // if state change is from server - do not socket.emit
     // how does onPlayerStateChange know if it's from server or user?
     // if state change value is coming from socket.on, then do not socket.emit
     // How do we check if state change value is coming from socket.on?
-    if (!serverPaused) {
-      socket.emit('VIDEO_PAUSE', { event: "pause" }); // No delay on pause emit?
-    }
 
-    serverPaused = false;
+    if (!serverPause) {
+      socket.emit('VIDEO_PAUSE', { event: "pause" }); 
+    }
+    
+    serverPause = false;
 
   // } else if (event.data === 3) {
   //   let time = player.getCurrentTime();
