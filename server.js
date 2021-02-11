@@ -20,7 +20,7 @@ io.on('connection', (socket) => {
 
   socket.on('VIDEO_PLAY', (data) => {
     console.log(data);
-    io.emit('VIDEO_PLAY', data);
+    socket.broadcast.emit('VIDEO_PLAY', data);
   });
 
   socket.on('VIDEO_PAUSE', (data) => {

@@ -1,7 +1,8 @@
 let player;
 let youtubePlayer;
-let serverPause = false;
-let serverPlay = false;
+// let serverPause = false;
+// let serverPlay = false;
+let serverEvent = false;
 
 // SOCKET stuff
 const socket = io(); // Establish socket connection
@@ -14,13 +15,15 @@ socket.on('VIDEO_LOAD', (data) => {
 socket.on('VIDEO_PLAY', (data) => {
   console.log(data);
   player.playVideo();
-  serverPlay = true;
+  // serverPlay = true;
+  serverEvent = true;
 });
 
 socket.on('VIDEO_PAUSE', (data) => {
   console.log(data);
   player.pauseVideo(); // triggers player state change from 1 -> 2
-  serverPause = true;
+  // serverPause = true;
+  serverEvent = true;
 });
 
 socket.on('VIDEO_SCRUB', (data) => {
@@ -111,13 +114,14 @@ function onPlayerStateChange(event) {
   console.log(event.data)
 
   if (event.data === 1) {
-    socket.emit('VIDEO_PLAY', { event: "play" }); 
+    // socket.emit('VIDEO_PLAY', { event: "play" }); 
 
-    // if (!serverPlay) {
-    //   socket.emit('VIDEO_PLAY', { event: "play" });
-    // }
+    if (!serverEvent) {
+      socket.emit('VIDEO_PLAY', { event: "play" });
+    }
 
     // serverPlay = false;
+    serverEvent = false;
 
   } else if (event.data === 2) {
     // socket.emit('VIDEO_PAUSE', { event: "pause" }); 
@@ -127,11 +131,12 @@ function onPlayerStateChange(event) {
     // if state change value is coming from socket.on, then do not socket.emit
     // How do we check if state change value is coming from socket.on?
 
-    if (!serverPause) {
+    if (!serverEvent) {
       socket.emit('VIDEO_PAUSE', { event: "pause" }); 
     }
     
-    serverPause = false;
+    // serverPause = false;
+    serverEvent = false;
 
   // } else if (event.data === 3) {
   //   let time = player.getCurrentTime();
