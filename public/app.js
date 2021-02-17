@@ -1,6 +1,13 @@
 let player;
 let youtubePlayer;
-let serverEvent = false;
+// const serverEvents = {
+//   play: false,
+//   pause: false,
+//   buffer: false
+// }
+let serverPlay = false;
+let serverPause = false;
+let serverBuffer = false;
 
 // SOCKET stuff
 const socket = io(); // Establish socket connection
@@ -11,22 +18,35 @@ socket.on('VIDEO_LOAD', (data) => {
 });
 
 socket.on('VIDEO_PLAY', (data) => {
+  console.log('RECEIVING PLAY from SERVER...')
   console.log(data);
   player.playVideo();
-  serverEvent = true;
+
+  console.log('serverPlay set to TRUE');
+  serverPlay = true;
+  console.log('-------------------')
 });
 
 socket.on('VIDEO_PAUSE', (data) => {
+  console.log('RECEIVING PAUSE from SERVER...'); 
   console.log(data);
   player.pauseVideo(); // triggers player state change from 1 -> 2
-  serverEvent = true;
+
+  console.log('serverPause set to TRUE');
+  serverPause = true;
+  console.log('-------------------')
 });
 
-socket.on('VIDEO_SCRUB', (data) => {
+socket.on('VIDEO_BUFFER', (data) => {
+  console.log('RECEIVING BUFFER from SERVER...');
   console.log(data);
-  player.seekTo(data.scrubTime);
-  serverEvent = true;
-  // scrubVideo(data.scrubTime);
+  player.seekTo(data.time); // changes player state from 3 -> 1 if video was playing
+
+  console.log('serverBuffer set to TRUE');
+  serverBuffer = true;
+  console.log('serverPlay set to TRUE');
+  serverPlay = true;
+  console.log('-------------------')
 });
 
 socket.on('VIDEO_STOP', (data) => {
@@ -46,11 +66,11 @@ socket.on('VIDEO_STOP', (data) => {
 //   socket.emit('VIDEO_PAUSE', { event: "pause" } );
 // });
 
-// // Stop button
-// const $stop = document.querySelector('.js-stop');
-// $stop.addEventListener('click', () => {
-//   socket.emit('VIDEO_STOP', {});
-// });
+// Stop button
+const $stop = document.querySelector('.js-stop');
+$stop.addEventListener('click', () => {
+  socket.emit('VIDEO_STOP', {});
+});
 
 // Search Bar
 const $form = document.querySelector('form')
@@ -81,6 +101,7 @@ function getYouTubeId(url) {
   return myParam;
 }
 
+// YOUTUBE PLAYER
 // Load IFrame Player API code
 let tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
@@ -105,41 +126,45 @@ function onYouTubeIframeAPIReady() {
 
 function onPlayerReady() {
   console.log('Youtube player is ready');
+  // pass in room data when player is ready
+  // Initial data is { videoId: "", time: "", }
 }
 
 function onPlayerStateChange(event) {
   console.log(event.data)
 
   if (event.data === 1) { // PLAY
-    if (!serverEvent) {
+    if (!serverPlay) {
+      console.log('EMITTING PLAY event from CLIENT');
       socket.emit('VIDEO_PLAY', { event: "play" });
     }
 
-    serverEvent = false;
+    console.log('serverPlay set to FALSE');
+    serverPlay = false;
+    console.log('-------------------')
 
   } else if (event.data === 2) { // PAUSE
-    if (!serverEvent) {
+    if (!serverPause) {
+      console.log('EMITTING PAUSE event from CLIENT');
       socket.emit('VIDEO_PAUSE', { event: "pause" }); 
     }
-    
-    serverEvent = false;
+  
+    console.log('serverPause set to FALSE');
+    serverPause = false;
+    console.log('-------------------')
 
   } else if (event.data === 3) { // BUFFERING
     let time = player.getCurrentTime();
-    console.log('Buffering...' + time);
-    // socket.emit('VIDEO_SCRUB', { event: "scrub", scrubTime: time });
     
-    if (!serverEvent) {
-      socket.emit('VIDEO_SCRUB', { event: "scrub", scrubTime: time });
+    if (!serverBuffer) {
+      console.log('EMITTING BUFFER event from CLIENT... Time: ' + time);
+      socket.emit('VIDEO_BUFFER', { event: "buffer", time });
     }
 
-    serverEvent = false;
+    console.log('serverBuffer set to FALSE');
+    serverBuffer = false;
+    console.log('-------------------');
   }
-}
-
-function scrubVideo(time) {
-  player.seekTo(time);
-  player.playVideo();
 }
 
 /*
