@@ -9,6 +9,7 @@ let serverPlay = false;
 let serverPause = false;
 let serverBuffer = false;
 
+
 // SOCKET stuff
 const socket = io(); // Establish socket connection
 
@@ -40,7 +41,8 @@ socket.on('VIDEO_PAUSE', (data) => {
 socket.on('VIDEO_BUFFER', (data) => {
   console.log('RECEIVING BUFFER from SERVER...');
   console.log(data);
-  player.seekTo(data.time); // changes player state from 3 -> 1 if video was playing
+  // player.pauseVideo();
+  player.seekTo(data.currTime); // changes player state from 3 -> 1 if video was playing
 
   console.log('serverBuffer set to TRUE');
   serverBuffer = true;
@@ -72,7 +74,7 @@ $stop.addEventListener('click', () => {
   socket.emit('VIDEO_STOP', {});
 });
 
-// Search Bar
+// SEARCH BAR
 const $form = document.querySelector('form')
 $form.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -81,7 +83,8 @@ $form.addEventListener('submit', (e) => {
   // make sure it is valid url
   if (isValidUrl(url)) {
     const id = getYouTubeId(url);
-    socket.emit('VIDEO_LOAD', { videoId: id });
+    socket.emit('VIDEO_LOAD', { event: "load", videoId: id });
+
     $form.elements.youtube_url.value = "";
   } else {
     // throw error
@@ -99,6 +102,16 @@ function getYouTubeId(url) {
   const youtubeId = "v"
   const myParam = urlParams.get(youtubeId);
   return myParam;
+}
+
+function getVideoData() {
+  let videoData = {
+    videoId: player.getVideoData().video_id,
+    state: player.getPlayerState(),
+    currTime: player.getCurrentTime()
+  }
+
+  return videoData;
 }
 
 // YOUTUBE PLAYER
@@ -127,16 +140,18 @@ function onYouTubeIframeAPIReady() {
 function onPlayerReady() {
   console.log('Youtube player is ready');
   // pass in room data when player is ready
-  // Initial data is { videoId: "", time: "", }
+  // console.log(currentVideo);
+  // socket.emit('SYNC', {});
 }
 
 function onPlayerStateChange(event) {
   console.log(event.data)
+  // socket.emit('UPDATE_STATE', { state: event.data });
 
   if (event.data === 1) { // PLAY
     if (!serverPlay) {
       console.log('EMITTING PLAY event from CLIENT');
-      socket.emit('VIDEO_PLAY', { event: "play" });
+      socket.emit('VIDEO_PLAY', { event: 'play', state: event.data, currTime: player.getCurrentTime() });
     }
 
     console.log('serverPlay set to FALSE');
@@ -146,7 +161,7 @@ function onPlayerStateChange(event) {
   } else if (event.data === 2) { // PAUSE
     if (!serverPause) {
       console.log('EMITTING PAUSE event from CLIENT');
-      socket.emit('VIDEO_PAUSE', { event: "pause" }); 
+      socket.emit('VIDEO_PAUSE', { event: "pause", state: event.data, currTime: player.getCurrentTime() }); 
     }
   
     console.log('serverPause set to FALSE');
@@ -158,7 +173,7 @@ function onPlayerStateChange(event) {
     
     if (!serverBuffer) {
       console.log('EMITTING BUFFER event from CLIENT... Time: ' + time);
-      socket.emit('VIDEO_BUFFER', { event: "buffer", time });
+      socket.emit('VIDEO_BUFFER', { event: "buffer", state: event.data, currTime: time });
     }
 
     console.log('serverBuffer set to FALSE');
@@ -194,3 +209,4 @@ https://www.youtube.com/watch?v=4_Tm0SxIp6w&ab_channel=ScreenRant
 player.seekTo(seconds:Number, allowSeekAhead:Boolean)
 player.getCurrentTime()
 */
+
