@@ -20,6 +20,11 @@ class Video {
 io.on('connection', (socket) => {
   console.log('a user connected');
 
+  // if currentVideo exists on server, send it to client
+  if (currentVideo) {
+    socket.emit('sync', currentVideo);
+  }
+
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });

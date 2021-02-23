@@ -8,10 +8,18 @@ let youtubePlayer;
 let serverPlay = false;
 let serverPause = false;
 let serverBuffer = false;
+let serverVideo;
 
 
 // SOCKET stuff
 const socket = io(); // Establish socket connection
+
+socket.on('sync', data => {
+  console.log(data);
+  // player.loadVideoById(data.videoId, data.currTime);
+  serverVideo = data;
+  // player.pauseVideo();
+})
 
 socket.on('VIDEO_LOAD', (data) => {
   console.log(data);
@@ -22,6 +30,7 @@ socket.on('VIDEO_PLAY', (data) => {
   console.log('RECEIVING PLAY from SERVER...')
   console.log(data);
   player.playVideo();
+  // player.seekTo(data.currTime);
 
   console.log('serverPlay set to TRUE');
   serverPlay = true;
@@ -140,8 +149,14 @@ function onYouTubeIframeAPIReady() {
 function onPlayerReady() {
   console.log('Youtube player is ready');
   // pass in room data when player is ready
-  // console.log(currentVideo);
-  // socket.emit('SYNC', {});
+  if (serverVideo) {
+    console.log('Loading serverVideo...')
+    console.log(serverVideo);
+    player.loadVideoById(serverVideo.videoId, serverVideo.currTime);
+
+    serverBuffer = true;
+    serverPlay = true;
+  }
 }
 
 function onPlayerStateChange(event) {
@@ -151,6 +166,7 @@ function onPlayerStateChange(event) {
   if (event.data === 1) { // PLAY
     if (!serverPlay) {
       console.log('EMITTING PLAY event from CLIENT');
+      console.log(player.getCurrentTime());
       socket.emit('VIDEO_PLAY', { event: 'play', state: event.data, currTime: player.getCurrentTime() });
     }
 
@@ -169,6 +185,7 @@ function onPlayerStateChange(event) {
     console.log('-------------------')
 
   } else if (event.data === 3) { // BUFFERING
+    // debugger;
     let time = player.getCurrentTime();
     
     if (!serverBuffer) {
