@@ -1,10 +1,5 @@
 let player;
 let youtubePlayer;
-// const serverEvents = {
-//   play: false,
-//   pause: false,
-//   buffer: false
-// }
 let serverPlay = false;
 let serverPause = false;
 let serverBuffer = false;
@@ -18,19 +13,17 @@ socket.on('sync', data => {
   console.log(data);
   // player.loadVideoById(data.videoId, data.currTime);
   serverVideo = data;
-  // player.pauseVideo();
-})
+});
 
 socket.on('VIDEO_LOAD', (data) => {
   console.log(data);
-  player.cueVideoById(data.videoId);
+  player.cueVideoById(data);
 });
 
 socket.on('VIDEO_PLAY', (data) => {
   console.log('RECEIVING PLAY from SERVER...')
   console.log(data);
   player.playVideo();
-  // player.seekTo(data.currTime);
 
   console.log('serverPlay set to TRUE');
   serverPlay = true;
@@ -50,8 +43,7 @@ socket.on('VIDEO_PAUSE', (data) => {
 socket.on('VIDEO_BUFFER', (data) => {
   console.log('RECEIVING BUFFER from SERVER...');
   console.log(data);
-  // player.pauseVideo();
-  player.seekTo(data.currTime); // changes player state from 3 -> 1 if video was playing
+  player.seekTo(data); // changes player state from 3 -> 1 if video was playing
 
   console.log('serverBuffer set to TRUE');
   serverBuffer = true;
@@ -78,10 +70,10 @@ socket.on('VIDEO_STOP', (data) => {
 // });
 
 // Stop button
-const $stop = document.querySelector('.js-stop');
-$stop.addEventListener('click', () => {
-  socket.emit('VIDEO_STOP', {});
-});
+// const $stop = document.querySelector('.js-stop');
+// $stop.addEventListener('click', () => {
+//   socket.emit('VIDEO_STOP', {});
+// });
 
 // SEARCH BAR
 const $form = document.querySelector('form')
@@ -152,22 +144,24 @@ function onPlayerReady() {
   if (serverVideo) {
     console.log('Loading serverVideo...')
     console.log(serverVideo);
-    player.loadVideoById(serverVideo.videoId, serverVideo.currTime);
+    if (serverVideo.state === "pause") {
+      player.cueVideoById(serverVideo.videoId, serverVideo.currTime);
+    } else {
+      player.loadVideoById(serverVideo.videoId, serverVideo.currTime);
+      serverPlay = true;
+    }
 
     serverBuffer = true;
-    serverPlay = true;
   }
 }
 
 function onPlayerStateChange(event) {
   console.log(event.data)
-  // socket.emit('UPDATE_STATE', { state: event.data });
 
   if (event.data === 1) { // PLAY
     if (!serverPlay) {
       console.log('EMITTING PLAY event from CLIENT');
-      console.log(player.getCurrentTime());
-      socket.emit('VIDEO_PLAY', { event: 'play', state: event.data, currTime: player.getCurrentTime() });
+      socket.emit('VIDEO_PLAY', { event: 'play' });
     }
 
     console.log('serverPlay set to FALSE');
@@ -176,8 +170,9 @@ function onPlayerStateChange(event) {
 
   } else if (event.data === 2) { // PAUSE
     if (!serverPause) {
+      let currTime = player.getCurrentTime();
       console.log('EMITTING PAUSE event from CLIENT');
-      socket.emit('VIDEO_PAUSE', { event: "pause", state: event.data, currTime: player.getCurrentTime() }); 
+      socket.emit('VIDEO_PAUSE', { event: "pause", currTime }); 
     }
   
     console.log('serverPause set to FALSE');
@@ -185,12 +180,11 @@ function onPlayerStateChange(event) {
     console.log('-------------------')
 
   } else if (event.data === 3) { // BUFFERING
-    // debugger;
-    let time = player.getCurrentTime();
+    let currTime = player.getCurrentTime();
     
     if (!serverBuffer) {
-      console.log('EMITTING BUFFER event from CLIENT... Time: ' + time);
-      socket.emit('VIDEO_BUFFER', { event: "buffer", state: event.data, currTime: time });
+      console.log('EMITTING BUFFER event from CLIENT... Time: ' + currTime);
+      socket.emit('VIDEO_BUFFER', { event: "buffer", currTime });
     }
 
     console.log('serverBuffer set to FALSE');
