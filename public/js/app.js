@@ -1,17 +1,19 @@
 let player;
-let youtubePlayer;
 let serverPlay = false;
 let serverPause = false;
 let serverBuffer = false;
 let serverVideo;
 
+const room = window.location.pathname.substring(1);
 
 // SOCKET stuff
 const socket = io(); // Establish socket connection
 
-socket.on('sync', data => {
+// Join room
+socket.emit('joinRoom', { room });
+
+socket.on('SYNC', data => {
   console.log(data);
-  // player.loadVideoById(data.videoId, data.currTime);
   serverVideo = data;
 });
 
@@ -33,7 +35,7 @@ socket.on('VIDEO_PLAY', (data) => {
 socket.on('VIDEO_PAUSE', (data) => {
   console.log('RECEIVING PAUSE from SERVER...'); 
   console.log(data);
-  player.pauseVideo(); // triggers player state change from 1 -> 2
+  player.pauseVideo(); 
 
   console.log('serverPause set to TRUE');
   serverPause = true;
@@ -43,7 +45,7 @@ socket.on('VIDEO_PAUSE', (data) => {
 socket.on('VIDEO_BUFFER', (data) => {
   console.log('RECEIVING BUFFER from SERVER...');
   console.log(data);
-  player.seekTo(data); // changes player state from 3 -> 1 if video was playing
+  player.seekTo(data);
 
   console.log('serverBuffer set to TRUE');
   serverBuffer = true;
@@ -52,36 +54,13 @@ socket.on('VIDEO_BUFFER', (data) => {
   console.log('-------------------')
 });
 
-socket.on('VIDEO_STOP', (data) => {
-  console.log(data);
-  player.stopVideo();
-});
-
-// // Play button
-// const $play = document.querySelector('.js-play');
-// $play.addEventListener('click', () => {
-//   socket.emit('VIDEO_PLAY', { event: "play" });
-// });
-
-// // Pause button
-// const $pause = document.querySelector('.js-pause');
-// $pause.addEventListener('click', () => {
-//   socket.emit('VIDEO_PAUSE', { event: "pause" } );
-// });
-
-// Stop button
-// const $stop = document.querySelector('.js-stop');
-// $stop.addEventListener('click', () => {
-//   socket.emit('VIDEO_STOP', {});
-// });
-
 // SEARCH BAR
 const $form = document.querySelector('form')
 $form.addEventListener('submit', (e) => {
   e.preventDefault();
   const url = $form.elements.youtube_url.value;
 
-  // make sure it is valid url
+  // Make sure it is valid url
   if (isValidUrl(url)) {
     const id = getYouTubeId(url);
     socket.emit('VIDEO_LOAD', { event: "load", videoId: id });
@@ -94,7 +73,7 @@ $form.addEventListener('submit', (e) => {
 });
 
 function isValidUrl(url) {
-  return true; // TODO: use regex?
+  return true; // TODO
 }
 
 function getYouTubeId(url) {
@@ -150,7 +129,6 @@ function onPlayerReady() {
       player.loadVideoById(serverVideo.videoId, serverVideo.currTime);
       serverPlay = true;
     }
-
     serverBuffer = true;
   }
 }
@@ -209,15 +187,4 @@ on PlaybackQualityChange
 onPlaybackRateChange
 onError
 onApiChange
-/*
-
-/*
-loadVideoById // don't use this
-cueVideoById
-player.playVideo()
-stopVideo()
-https://www.youtube.com/watch?v=4_Tm0SxIp6w&ab_channel=ScreenRant
-player.seekTo(seconds:Number, allowSeekAhead:Boolean)
-player.getCurrentTime()
 */
-

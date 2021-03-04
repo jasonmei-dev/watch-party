@@ -1,109 +1,106 @@
-const express = require('express');
-const app = express();
-
+const path = require('path');
 const http = require('http');
+const express = require('express');
+const socketio = require('socket.io');
+const { v4: uuidv4 } = require('uuid'); 
+const Video = require('./utilities/Video');
+
+const app = express();
 const server = http.createServer(app);
-const io = require('socket.io')(server);
+const io = socketio(server);
+const PORT = process.env.PORT || 3000;
 
-const port = process.env.PORT || 3000;
+const rooms = {};
 
-// Set static folder
+// Routes
+app.get('/', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'public/index.html'));
+});
+
+app.post('/room', (req, res) => {
+  const room = createNewRoom();
+  res.redirect(`/${room}`)
+});
+
+app.get('/:room', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'public/room.html'));
+});
+
 app.use(express.static('public'));
 
-class Video {
-  constructor(id) {
-    this.videoId = id,
-    this.state = 'pause',
-    this.currTime = 0,
-    this.intervalId = null
-  }
-
-  play() {
-    this.state = 'play';
-    this.intervalId = setInterval(() => this.currTime++, 1000);
-  }
-
-  pause(time) {
-    this.state = 'pause';
-    this.currTime = time;
-    clearInterval(this.intervalId);
-  }
-
-  buffer(time) {
-    this.currTime = time;
-  }
+// Create new room
+function createNewRoom() {
+  const roomID = uuidv4();
+  rooms[roomID] = { currentVideo: null, users: [] }
+  console.log(rooms);
+  return roomID;
 }
 
-let currentVideo;
+// User leaves room
+function userLeave(users, id) {
+  const index = users.findIndex(userID => userID === id);
+  if (index !== -1) users.splice(index, 1);
+}
 
-// SOCKET
+// SOCKET stuff
 io.on('connection', (socket) => {
-  console.log('a user connected');
 
-  // create and join new room
-  // socket.on('create room', )
+  // Join room
+  socket.on('joinRoom', ({ room }) => {
+    console.log("A user joined the room")
+    socket.join(room);
+    rooms[room].users.push(socket.id);
 
-  // // join existing room
-  // socket.on('join room', roomName => {
-  //   socket.join(roomName);
-  // })
-
-  // if currentVideo exists on server, send it to client
-  if (currentVideo) {
-    let videoData = {
-      videoId: currentVideo.videoId,
-      state: currentVideo.state,
-      currTime: currentVideo.currTime,
+    // if currentVideo exists in room, send it to new client
+    if (rooms[room].currentVideo) {
+      const videoData = {
+        videoId: rooms[room].currentVideo.videoId,
+        state: rooms[room].currentVideo.state,
+        currTime: rooms[room].currentVideo.currTime,
+      }
+      socket.emit('SYNC', videoData);
     }
-    socket.emit('sync', videoData);
-  }
 
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
+    socket.on('VIDEO_LOAD', (data) => {
+      console.log(data);
+      rooms[room].currentVideo = new Video(data.videoId);
+  
+      io.to(room).emit('VIDEO_LOAD', rooms[room].currentVideo.videoId);
+    });
+  
+    socket.on('VIDEO_PLAY', (data) => {
+      console.log(data);
+      rooms[room].currentVideo.play();
+  
+      socket.to(room).broadcast.emit('VIDEO_PLAY', rooms[room].currentVideo.state);
+    });
+  
+    socket.on('VIDEO_PAUSE', (data) => {
+      console.log(data);
+      rooms[room].currentVideo.pause(data.currTime);
+  
+      socket.to(room).broadcast.emit('VIDEO_PAUSE', rooms[room].currentVideo.state);
+    });
+  
+    socket.on('VIDEO_BUFFER', (data) => {
+      console.log(data);
+      rooms[room].currentVideo.buffer(data.currTime);
+  
+      socket.to(room).broadcast.emit('VIDEO_BUFFER', rooms[room].currentVideo.currTime);
+    });
 
-  socket.on('VIDEO_LOAD', (data) => {
-    console.log(data);
-    currentVideo = new Video(data.videoId);
-
-    console.log(currentVideo);
-    io.emit('VIDEO_LOAD', currentVideo.videoId);
-  });
-
-  socket.on('VIDEO_PLAY', (data) => {
-    console.log(data);
-    currentVideo.play();
-
-    console.log(currentVideo);
-    socket.broadcast.emit('VIDEO_PLAY', currentVideo.state);
-    // io.emit('VIDEO_PLAY', data);
-  });
-
-  socket.on('VIDEO_PAUSE', (data) => {
-    console.log(data);
-    currentVideo.pause(data.currTime);
-
-    console.log(currentVideo);
-    socket.broadcast.emit('VIDEO_PAUSE', currentVideo.state);
-    // io.emit('VIDEO_PAUSE', data);
-  });
-
-  socket.on('VIDEO_BUFFER', (data) => {
-    console.log(data);
-    currentVideo.buffer(data.currTime);
-
-    console.log(currentVideo);
-    socket.broadcast.emit('VIDEO_BUFFER', currentVideo.currTime);
-    // io.emit('VIDEO_BUFFER', data);
-  });
-
-  socket.on('VIDEO_STOP', (data) => {
-    console.log(data);
-    io.emit('VIDEO_STOP', data);
+    socket.on('disconnect', () => {
+      console.log('A user left the room');
+      userLeave(rooms[room].users, socket.id);
+      
+      // Delete room if there are no users
+      if (rooms[room].users.length === 0) delete rooms[room];
+      console.log('rooms', rooms);
+    });
   });
 
 });
 
-server.listen(port, () => {
-  console.log(`Listening on port:${port}`);
-})
+server.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
