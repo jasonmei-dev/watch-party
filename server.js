@@ -33,7 +33,11 @@ app.post('/join', (req, res) => {
 });
 
 app.get('/:room', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'public/room.html'));
+  if (rooms[req.params.room]) {
+    res.sendFile(path.resolve(__dirname, 'public/room.html'));
+  } else {
+    res.redirect('/');
+  }
 });
 
 app.use(express.static('public'));
@@ -62,7 +66,7 @@ io.on('connection', (socket) => {
     socket.join(room);
     rooms[room].users.push(socket.id);
     console.log(rooms)
-    
+
     // if currentVideo exists in room, send it to new client
     if (rooms[room].currentVideo) {
       const videoData = {
