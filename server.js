@@ -12,6 +12,8 @@ const PORT = process.env.PORT || 3000;
 
 const rooms = {};
 
+app.use(express.urlencoded({ extended: true }));
+
 // Routes
 app.get('/', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'public/index.html'));
@@ -22,11 +24,20 @@ app.post('/room', (req, res) => {
   res.redirect(`/${room}`)
 });
 
+app.post('/join', (req, res) => {
+  if (rooms[req.body.room]) {
+    res.redirect(`/${req.body.room}`)
+  } else {
+    res.redirect('/');
+  }
+});
+
 app.get('/:room', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'public/room.html'));
 });
 
 app.use(express.static('public'));
+
 
 // Create new room
 function createNewRoom() {
@@ -50,7 +61,8 @@ io.on('connection', (socket) => {
     console.log("A user joined the room")
     socket.join(room);
     rooms[room].users.push(socket.id);
-
+    console.log(rooms)
+    
     // if currentVideo exists in room, send it to new client
     if (rooms[room].currentVideo) {
       const videoData = {
