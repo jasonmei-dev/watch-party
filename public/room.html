@@ -4,18 +4,32 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script
+      src="https://kit.fontawesome.com/00ebd93dd5.js"
+      crossorigin="anonymous"
+    ></script>
   <link rel="stylesheet" href="css/room.css">
   <title>weWatch</title>
 </head>
 <body>
-  <a href="/">Leave Room</a>
+  <nav id="navbar">
+    <a href="/"><h1>weWatch</h1></a>
+    <ul>
+      <li>
+        <a href="/"><i class="fas fa-sign-out-alt"></i></i> Leave Room</a>
+      </li>
+    </ul>
+  </nav>
 
-  <form>
-    <input type="text" name="youtube_url" placeholder="Enter YouTube URL">
-    <input type="submit">
-  </form>
+  <div class="container">
+    <form class='search'>
+      <input type="text" name="youtube_url" placeholder="Enter YouTube URL" required>
+      <button type="submit" class="button">Load Video</button>
+    </form>
 
-  <div id="player"></div>
+    <div id="player"></div>
+  </div>
+  </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="js/app.js"></script>

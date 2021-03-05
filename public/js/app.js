@@ -55,17 +55,17 @@ socket.on('VIDEO_BUFFER', (data) => {
 });
 
 // SEARCH BAR
-const $form = document.querySelector('form')
-$form.addEventListener('submit', (e) => {
+const $searchBar = document.querySelector('.search')
+$searchBar.addEventListener('submit', (e) => {
   e.preventDefault();
-  const url = $form.elements.youtube_url.value;
+  const url = $searchBar.elements.youtube_url.value;
 
   // Make sure it is valid url
   if (isValidUrl(url)) {
     const id = getYouTubeId(url);
     socket.emit('VIDEO_LOAD', { event: "load", videoId: id });
 
-    $form.elements.youtube_url.value = "";
+    $searchBar.elements.youtube_url.value = "";
   } else {
     // throw error
   }
@@ -105,8 +105,14 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 // Create <iframe> and YouTube player after API code loads
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
-    height: '390',
-    width: '640',
+    // height: '390', // default
+    // width: '640', // default
+    // height: '468', // x1.2
+    // width: '768', // x1.2
+    height: '487.5', // x1.25
+    width: '800', // x1.25
+    // height: '585', // x1.5
+    // width: '960', // x1.5
     playerVars: {
       'mute': 1
     },
