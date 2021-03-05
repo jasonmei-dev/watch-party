@@ -13,7 +13,7 @@ body {
   line-height: 1.6;
 }
 
-h1 {
+.header {
   color: blue;
 }
 
@@ -65,13 +65,17 @@ a {
   color: #fff;
 }
 
+a:hover {
+  color: #333;
+}
+
 .github-logo {
   font-size: 24px;
 }
-
+/* 
 .github-logo:hover {
   color: #333;
-}
+} */
 
 /* Modal */
 .modal {
