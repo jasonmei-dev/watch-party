@@ -114,7 +114,7 @@ function onYouTubeIframeAPIReady() {
     // height: '585', // x1.5
     // width: '960', // x1.5
     playerVars: {
-      'mute': 1
+      // 'mute': 1
     },
     events: {
       onReady: onPlayerReady,
