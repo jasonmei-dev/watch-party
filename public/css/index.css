@@ -1,0 +1,148 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Montserrat", sans-serif;
+  /* font-family: Arial, Helvetica, sans-serif; */
+  font-size: 20px;
+  line-height: 1.6;
+}
+
+h1 {
+  color: blue;
+}
+
+.button {
+  background: coral;
+  padding: 1rem 2rem;
+  color: #fff;
+  border: 0;
+  width: 200px;
+}
+
+.button:hover {
+  background: #333;
+  cursor: pointer;
+}
+
+.container {
+  text-align: center;
+  margin: 10% auto;
+}
+
+.main-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 80px auto;
+}
+
+.main-buttons .flex-item {
+  margin: 1rem 2rem;
+}
+
+/* Navbar */
+#navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: coral;
+  color: #fff;
+  padding: 0 30px;
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: #fff;
+}
+
+.github-logo {
+  font-size: 24px;
+}
+
+.github-logo:hover {
+  color: #333;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #f4f4f4;
+  margin: 20% auto;
+  padding: 20px;
+  width: 400px;
+  box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 7px 20px 0 rgba(0, 0, 0, 0.17);
+  animation-name: modalOpen;
+  animation-duration: 1s;
+}
+
+.modal-header {
+  text-align: center;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-form input {
+  width: 80%;
+  font-size: 1rem;
+  padding: 0.5rem;
+  margin: 20px auto;
+  display: block;
+}
+
+.modal-button {
+  width: 120px;
+}
+
+.closeBtn {
+  color: #ccc;
+  float: right;
+  font-size: 30px;
+}
+
+.closeBtn:hover,
+.closeBtn:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@keyframes modalOpen {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-buttons {
+    flex-direction: column;
+  }
+}

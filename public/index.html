@@ -4,18 +4,54 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/style.css">
-  <title>Watch Party</title>
+  <script
+      src="https://kit.fontawesome.com/00ebd93dd5.js"
+      crossorigin="anonymous"
+    ></script>
+  <link rel="stylesheet" href="css/index.css">
+  <title>weWatch</title>
 </head>
 <body>
-  <h1>Welcome to the Watch Party!</h1>
-  <form action="/room" method="POST">
-    <button type="submit" class="js-new-button">Create a Room</button>
-  </form>
+  <nav id="navbar">
+    <h1><a href="/">weWatch</a></h1>
+    <ul>
+      <li>
+        <a href="https://github.com/jasonmei-dev/watch-party"><i class="fab fa-github github-logo"></i></a>
+      </li>
+    </ul>
+  </nav>
 
-  <form action="/join" method="POST">
-    <input type="text" name="room" id="room" placeholder="Enter Room ID..."required />
-    <button type="submit" class="js-join-button">Join a Room</button>
-  </form>
+  <div class="container">
+    <h1>weWatch</h1>
+    <p>Watch Youtube videos in-sync with friends.</p>
+    
+    <div class="main-buttons">
+      <div class="flex-item">
+        <form action="/room" method="POST">
+          <button type="submit" class="button">New Room</button>
+        </form>
+      </div>
+      
+      <div class="flex-item">
+        <button id="modalBtn" class="button">Join Room</button>
+      </div>
+    </div>
+
+  </div>
+  
+  <!-- Modal -->
+  <div id="modalForm" class="modal">
+    <div class="modal-content">
+      <span class="closeBtn">&times;</span>
+      <div class="modal-header">
+        <h2>Enter Room ID</h2>
+      </div>
+      <form action="/join" method="POST" class='modal-form'>
+        <input type="text" name="room" id="room" placeholder="Room ID"required />
+        <button type="submit" class="button modal-button">Join</button>
+      </form>
+    </div>
+  </div>
+  <script src="js/index.js"></script>
 </body>
 </html>
