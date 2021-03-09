@@ -110,8 +110,8 @@ io.on('connection', (socket) => {
       userLeave(rooms[room].users, socket.id);
       
       // Delete room if there are no users
-      if (rooms[room].users.length === 0) delete rooms[room];
-      console.log('rooms', rooms);
+      // if (rooms[room].users.length === 0) delete rooms[room];
+      // console.log('rooms', rooms);
     });
   });
 
