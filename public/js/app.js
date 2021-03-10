@@ -4,6 +4,8 @@ let serverPause = false;
 let serverBuffer = false;
 let serverVideo;
 
+const chatForm = document.querySelector('#chat-form');
+const chatMessages = document.querySelector('.chat-messages');
 const room = window.location.pathname.substring(1);
 
 // SOCKET stuff
@@ -12,46 +14,34 @@ const socket = io(); // Establish socket connection
 // Join room
 socket.emit('joinRoom', { room });
 
+// Message from server
+socket.on('message', message => {
+  console.log(message);
+  outputMessage(message);
+});
+
 socket.on('SYNC', data => {
-  console.log(data);
   serverVideo = data;
 });
 
 socket.on('VIDEO_LOAD', (data) => {
-  console.log(data);
   player.cueVideoById(data);
 });
 
 socket.on('VIDEO_PLAY', (data) => {
-  console.log('RECEIVING PLAY from SERVER...')
-  console.log(data);
   player.playVideo();
-
-  console.log('serverPlay set to TRUE');
   serverPlay = true;
-  console.log('-------------------')
 });
 
 socket.on('VIDEO_PAUSE', (data) => {
-  console.log('RECEIVING PAUSE from SERVER...'); 
-  console.log(data);
   player.pauseVideo(); 
-
-  console.log('serverPause set to TRUE');
   serverPause = true;
-  console.log('-------------------')
 });
 
 socket.on('VIDEO_BUFFER', (data) => {
-  console.log('RECEIVING BUFFER from SERVER...');
-  console.log(data);
   player.seekTo(data);
-
-  console.log('serverBuffer set to TRUE');
   serverBuffer = true;
-  console.log('serverPlay set to TRUE');
   serverPlay = true;
-  console.log('-------------------')
 });
 
 // SEARCH BAR
@@ -124,11 +114,8 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerReady() {
-  console.log('Youtube player is ready');
   // pass in room data when player is ready
   if (serverVideo) {
-    console.log('Loading serverVideo...')
-    console.log(serverVideo);
     if (serverVideo.state === "pause") {
       player.cueVideoById(serverVideo.videoId, serverVideo.currTime);
     } else {
@@ -140,57 +127,49 @@ function onPlayerReady() {
 }
 
 function onPlayerStateChange(event) {
-  console.log(event.data)
-
   if (event.data === 1) { // PLAY
-    if (!serverPlay) {
-      console.log('EMITTING PLAY event from CLIENT');
-      socket.emit('VIDEO_PLAY', { event: 'play' });
-    }
-
-    console.log('serverPlay set to FALSE');
+    if (!serverPlay) socket.emit('VIDEO_PLAY', { event: 'play' });
     serverPlay = false;
-    console.log('-------------------')
 
   } else if (event.data === 2) { // PAUSE
     if (!serverPause) {
       let currTime = player.getCurrentTime();
-      console.log('EMITTING PAUSE event from CLIENT');
       socket.emit('VIDEO_PAUSE', { event: "pause", currTime }); 
     }
-  
-    console.log('serverPause set to FALSE');
     serverPause = false;
-    console.log('-------------------')
 
   } else if (event.data === 3) { // BUFFERING
     let currTime = player.getCurrentTime();
     
     if (!serverBuffer) {
-      console.log('EMITTING BUFFER event from CLIENT... Time: ' + currTime);
       socket.emit('VIDEO_BUFFER', { event: "buffer", currTime });
     }
 
-    console.log('serverBuffer set to FALSE');
     serverBuffer = false;
-    console.log('-------------------');
   }
 }
 
-/*
-Player States:
--1 (unstarted)
-0 (ended)
-1 (playing)
-2 (paused)
-3 (buffering)
-5 (video cued)
+// Chat stuff
+// Message submit
+chatForm.addEventListener('submit', e => {
+  e.preventDefault();
 
-Player Events:
-onReady
-onStateChange
-on PlaybackQualityChange
-onPlaybackRateChange
-onError
-onApiChange
-*/
+  const msg = e.target.elements.msg.value;
+
+  socket.emit('chatMessage', msg);
+
+  e.target.elements.msg.value = "";
+  e.target.elements.msg.focus();
+});
+
+// Output message to DOM
+function outputMessage(message) {
+  const div = document.createElement('div');
+  div.classList.add('message');
+  div.innerHTML = `<p class="meta">${message.username} <span>${message.time}</span></p>
+  <p class="text">
+    ${message.text}
+  </p>`;
+
+  chatMessages.appendChild(div);
+}

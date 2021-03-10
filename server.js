@@ -77,6 +77,16 @@ io.on('connection', (socket) => {
       socket.emit('SYNC', videoData);
     }
 
+    socket.on('chatMessage', msg => {
+      const data = {
+        username: socket.id,
+        time: 'timePlaceholder',
+        text: msg
+      }
+
+      io.to(room).emit('message', data);
+    });
+
     socket.on('VIDEO_LOAD', (data) => {
       console.log(data);
       rooms[room].currentVideo = new Video(data.videoId);

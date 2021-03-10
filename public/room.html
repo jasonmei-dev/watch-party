@@ -21,7 +21,7 @@
     </ul>
   </nav>
 
-  <div class="container">
+  <div class="video-container">
     <form class='search'>
       <input type="text" name="youtube_url" placeholder="Enter YouTube URL" required>
       <button type="submit" class="button">Load Video</button>
@@ -29,6 +29,15 @@
 
     <div id="player"></div>
   </div>
+
+  <div class="chat-container">
+    <div class="chat-messages"></div>
+    <div class="chat-form-container">
+      <form id="chat-form">
+        <input type="text" id='msg' placeholder='Enter Message' autocomplete='off' required />
+        <button type='submit' class='button'>Send</button>
+      </form>
+    </div>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>

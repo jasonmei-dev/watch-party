@@ -36,7 +36,7 @@ a:hover {
   color: #333;
 }
 
-.container {
+.video-container {
   text-align: center;
 }
 
@@ -62,4 +62,9 @@ a:hover {
 .button:hover {
   background: #333;
   cursor: pointer;
+}
+
+/* Chat */
+.chat-container {
+  border: 1px solid black;
 }
