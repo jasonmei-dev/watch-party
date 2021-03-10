@@ -4,6 +4,7 @@ const express = require('express');
 const socketio = require('socket.io');
 const { v4: uuidv4 } = require('uuid'); 
 const Video = require('./utilities/Video');
+const formatMessage = require('./utilities/messages');
 
 const app = express();
 const server = http.createServer(app);
@@ -46,15 +47,25 @@ app.use(express.static('public'));
 // Create new room
 function createNewRoom() {
   const roomID = uuidv4();
-  rooms[roomID] = { currentVideo: null, users: [] }
+  rooms[roomID] = { currentVideo: null, users: {} }
   console.log(rooms);
   return roomID;
 }
 
 // User leaves room
 function userLeave(users, id) {
-  const index = users.findIndex(userID => userID === id);
-  if (index !== -1) users.splice(index, 1);
+  // const index = users.findIndex(userID => userID === id);
+  // if (index !== -1) users.splice(index, 1);
+  delete users[id];
+}
+
+// Generate random name
+function getRandomName() {
+  const adjs = ["autumn", "hidden", "bitter", "misty", "silent", "empty", "dry", "dark", "summer", "icy", "delicate", "quiet", "white", "cool", "spring", "winter", "patient", "twilight", "dawn", "crimson", "wispy", "weathered", "blue", "billowing", "broken", "cold", "damp", "falling", "frosty", "green", "long", "late", "lingering", "bold", "little", "morning", "muddy", "old", "red", "rough", "still", "small", "sparkling", "throbbing", "shy", "wandering", "withered", "wild", "black", "young", "holy", "solitary", "fragrant", "aged", "snowy", "proud", "floral", "restless", "divine", "polished", "ancient", "purple", "lively", "nameless"];
+
+  const nouns = ["waterfall", "river", "breeze", "moon", "rain", "wind", "sea", "morning", "snow", "lake", "sunset", "pine", "shadow", "leaf", "dawn", "glitter", "forest", "hill", "cloud", "meadow", "sun", "glade", "bird", "brook", "butterfly", "bush", "dew", "dust", "field", "fire", "flower", "firefly", "feather", "grass", "haze", "mountain", "night", "pond", "darkness", "snowflake", "silence", "sound", "sky", "shape", "surf", "thunder", "violet", "water", "wildflower", "wave", "water", "resonance", "sun", "wood", "dream", "cherry", "tree", "fog", "frost", "voice", "paper", "frog", "smoke", "star"];
+
+  return adjs[Math.floor(Math.random() * adjs.length)] + "_" + nouns[Math.floor(Math.random() * nouns.length)];
 }
 
 // SOCKET stuff
@@ -64,7 +75,8 @@ io.on('connection', (socket) => {
   socket.on('joinRoom', ({ room }) => {
     console.log("A user joined the room")
     socket.join(room);
-    rooms[room].users.push(socket.id);
+    // rooms[room].users.push(socket.id);
+    rooms[room].users[socket.id] = getRandomName();
     console.log(rooms)
 
     // if currentVideo exists in room, send it to new client
@@ -77,14 +89,9 @@ io.on('connection', (socket) => {
       socket.emit('SYNC', videoData);
     }
 
+    // Chat message
     socket.on('chatMessage', msg => {
-      const data = {
-        username: socket.id,
-        time: 'timePlaceholder',
-        text: msg
-      }
-
-      io.to(room).emit('message', data);
+      io.to(room).emit('message', formatMessage(rooms[room].users[socket.id], msg));
     });
 
     socket.on('VIDEO_LOAD', (data) => {
@@ -121,10 +128,9 @@ io.on('connection', (socket) => {
       
       // Delete room if there are no users
       // if (rooms[room].users.length === 0) delete rooms[room];
-      // console.log('rooms', rooms);
+      console.log('rooms', rooms);
     });
   });
-
 });
 
 server.listen(PORT, () => {
