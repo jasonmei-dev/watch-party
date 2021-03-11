@@ -77,7 +77,17 @@ io.on('connection', (socket) => {
     socket.join(room);
     // rooms[room].users.push(socket.id);
     rooms[room].users[socket.id] = getRandomName();
-    console.log(rooms)
+    console.log(rooms);
+
+    // Send users to room
+    io.to(room).emit('roomUsers', {
+      users: rooms[room].users
+    });
+    
+    // Chat message
+    socket.on('chatMessage', msg => {
+      io.to(room).emit('message', formatMessage(rooms[room].users[socket.id], msg));
+    });
 
     // if currentVideo exists in room, send it to new client
     if (rooms[room].currentVideo) {
@@ -88,12 +98,8 @@ io.on('connection', (socket) => {
       }
       socket.emit('SYNC', videoData);
     }
-
-    // Chat message
-    socket.on('chatMessage', msg => {
-      io.to(room).emit('message', formatMessage(rooms[room].users[socket.id], msg));
-    });
-
+    
+    // Video Events
     socket.on('VIDEO_LOAD', (data) => {
       console.log(data);
       rooms[room].currentVideo = new Video(data.videoId);
@@ -125,6 +131,11 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
       console.log('A user left the room');
       userLeave(rooms[room].users, socket.id);
+
+      // Send updated users to room
+      io.to(room).emit('roomUsers', {
+        users: rooms[room].users
+      });
       
       // Delete room if there are no users
       // if (rooms[room].users.length === 0) delete rooms[room];

@@ -1,18 +1,24 @@
+const chatForm = document.querySelector('#chat-form');
+const chatMessages = document.querySelector('.chat-messages');
+const userList = document.querySelector('#users');
+const room = window.location.pathname.substring(1);
+
 let player;
 let serverPlay = false;
 let serverPause = false;
 let serverBuffer = false;
 let serverVideo;
 
-const chatForm = document.querySelector('#chat-form');
-const chatMessages = document.querySelector('.chat-messages');
-const room = window.location.pathname.substring(1);
-
 // SOCKET stuff
 const socket = io(); // Establish socket connection
 
 // Join room
 socket.emit('joinRoom', { room });
+
+// Receive room users from server
+socket.on('roomUsers', ({ users }) => {
+  outputUserList(users);
+});
 
 // Message from server
 socket.on('message', message => {
@@ -172,4 +178,17 @@ function outputMessage(message) {
   </p>`;
 
   chatMessages.appendChild(div);
+}
+
+// Output user list to DOM
+function outputUserList(users) {
+  const usersArr = [];
+
+  for (const userID in users) {
+    usersArr.push(users[userID]);
+  }
+
+  userList.innerHTML = `
+    ${usersArr.map(user => `<li>${user}</li>`).join('')}
+  `;
 }
