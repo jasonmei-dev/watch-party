@@ -15,7 +15,7 @@ const socket = io(); // Establish socket connection
 // Join room
 socket.emit('joinRoom', { room });
 
-// Receive room users from server
+// Receive room users list from server
 socket.on('roomUsers', ({ users }) => {
   outputUserList(users);
 });
