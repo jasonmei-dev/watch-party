@@ -1,6 +1,7 @@
 // User joins room
 function userJoin(users, id) {
   users[id] = getRandomName();
+  return users[id];
 }
 
 // User leaves room

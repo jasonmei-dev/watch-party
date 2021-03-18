@@ -21,28 +21,32 @@
     </ul>
   </nav>
 
-  <div class="video-container">
-    <form class='search'>
-      <input type="text" name="youtube_url" placeholder="Enter YouTube URL" required>
-      <button type="submit" class="button">Load Video</button>
-    </form>
-
-    <div id="player"></div>
-  </div>
-
-  <div class="chat-container">
-    <div class="chat-messages"></div>
-    <div class="chat-form-container">
-      <form id="chat-form">
-        <input type="text" id='msg' placeholder='Enter Message' autocomplete='off' required />
-        <button type='submit' class='button'>Send</button>
+  <div class="room-container">
+    <div class="video-container">
+      <form class='search'>
+        <input type="text" name="youtube_url" placeholder="Enter YouTube URL" required>
+        <button type="submit" class="button">Load Video</button>
       </form>
+  
+      <div id="player"></div>
     </div>
-  </div>
-
-  <div class="room-sidebar">
-    <h3>Users</h3>
-    <ul id="users"></ul>
+  
+    <div class="chat-container">
+      <div class="chat-main">
+        <div class="chat-messages"></div>
+      </div>
+      <div class="chat-form-container">
+        <form id="chat-form">
+          <input type="text" id='msg' placeholder='Enter Message' autocomplete='off' required />
+          <button type='submit' class='button'>Send</button>
+        </form>
+      </div>
+    </div>
+  
+    <div class="users-container">
+      <h3>Users</h3>
+      <ul id="users"></ul>
+    </div>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>

@@ -22,7 +22,6 @@ socket.on('roomUsers', ({ users }) => {
 
 // Message from server
 socket.on('message', message => {
-  console.log(message);
   outputMessage(message);
 });
 
@@ -101,16 +100,16 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 // Create <iframe> and YouTube player after API code loads
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
-    // height: '390', // default
-    // width: '640', // default
+    height: '390', // default
+    width: '640', // default
     // height: '468', // x1.2
     // width: '768', // x1.2
-    height: '487.5', // x1.25
-    width: '800', // x1.25
+    // height: '487.5', // x1.25
+    // width: '800', // x1.25
     // height: '585', // x1.5
     // width: '960', // x1.5
     playerVars: {
-      // 'mute': 1
+      'mute': 1
     },
     events: {
       onReady: onPlayerReady,

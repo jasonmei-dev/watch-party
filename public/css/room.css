@@ -1,5 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 
+:root {
+  --dark-color-a: #667aff;
+  --dark-color-b: #7386ff;
+  --light-color: #e6e9ff;
+  --success-color: #5cb85c;
+  --error-color: #d9534f;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -36,8 +44,15 @@ a:hover {
   color: #333;
 }
 
+.room-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
+}
+
 .video-container {
-  text-align: center;
+  /* text-align: center; */
 }
 
 /* Search Bar */
@@ -66,5 +81,55 @@ a:hover {
 
 /* Chat */
 .chat-container {
+  max-height: 500px;
+  /* height: 500px; */
+  /* width: 100%; */
+  /* overflow: hidden; */
+}
+
+.users-container {
   border: 1px solid black;
+  /* height: 100%; */
+  /* width: 100%; */
+}
+
+.chat-messages {
+  padding: 30px;
+  max-height: 500px;
+  overflow-y: scroll;
+}
+
+.chat-messages .message {
+  padding: 10px;
+  margin-bottom: 15px;
+  background-color: var(--light-color);
+  border-radius: 5px;
+}
+
+.chat-messages .message .meta {
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--dark-color-b);
+  opacity: 0.7;
+  margin-bottom: 7px;
+}
+
+.chat-messages .message .meta span {
+  color: #777;
+}
+
+.chat-form-container {
+  padding: 20px 30px;
+  background-color: var(--dark-color-a);
+}
+
+.chat-form-container form {
+  display: flex;
+}
+
+.chat-form-container input[type="text"] {
+  font-size: 16px;
+  padding: 5px;
+  height: 40px;
+  flex: 1;
 }

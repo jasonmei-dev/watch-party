@@ -3,6 +3,7 @@ const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
 const { v4: uuidv4 } = require('uuid'); 
+
 const Video = require('./utilities/Video');
 const formatMessage = require('./utilities/messages');
 const { userJoin, userLeave } = require('./utilities/users');
@@ -13,6 +14,7 @@ const io = socketio(server);
 const PORT = process.env.PORT || 3000;
 
 const rooms = {};
+const botName = 'weWatch Bot';
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -49,7 +51,6 @@ app.use(express.static('public'));
 function createNewRoom() {
   const roomID = uuidv4();
   rooms[roomID] = { currentVideo: null, users: {} }
-  console.log(rooms);
   return roomID;
 }
 
@@ -57,20 +58,28 @@ function createNewRoom() {
 io.on('connection', (socket) => {
   // Join room
   socket.on('joinRoom', ({ room }) => {
-    console.log("A user joined the room")
     const users = rooms[room].users;
-    
+    const user = userJoin(users, socket.id);
+
     socket.join(room);
 
-    userJoin(users, socket.id);
+    // Welcome current user
+    socket.emit('message', formatMessage(botName, 'Welcome to weWatch!'));
+
+    // Broadcasts when a user connects
+    socket.broadcast.to(room).emit('message', formatMessage(botName, `${user} has joined the room`));
+    
+    // Send users list to room
+    io.to(room).emit('roomUsers', { users });
     
     console.log('rooms:', rooms);
 
+    // Chat message
+    socket.on('chatMessage', msg => {
+      io.to(room).emit('message', formatMessage(user, msg));
+    });
 
-    // Send users list to room
-    io.to(room).emit('roomUsers', { users });
-
-    // If currentVideo exists in room, send it to new client
+    // If currentVideo exists in room, send it to new user
     if (rooms[room].currentVideo) {
       const videoData = {
         videoId: rooms[room].currentVideo.videoId,
@@ -84,7 +93,8 @@ io.on('connection', (socket) => {
     socket.on('VIDEO_LOAD', (data) => {
       console.log(data);
       rooms[room].currentVideo = new Video(data.videoId);
-  
+      
+      socket.broadcast.to(room).emit('message', formatMessage(botName, `${user} loaded a video`));
       io.to(room).emit('VIDEO_LOAD', rooms[room].currentVideo.videoId);
     });
   
@@ -92,32 +102,28 @@ io.on('connection', (socket) => {
       console.log(data);
       rooms[room].currentVideo.play();
   
+      socket.broadcast.to(room).emit('message', formatMessage(botName, `${user} played the video`));
       socket.to(room).broadcast.emit('VIDEO_PLAY', rooms[room].currentVideo.state);
     });
   
     socket.on('VIDEO_PAUSE', (data) => {
       console.log(data);
       rooms[room].currentVideo.pause(data.currTime);
-  
+      
+      socket.broadcast.to(room).emit('message', formatMessage(botName, `${user} paused the video`));
       socket.to(room).broadcast.emit('VIDEO_PAUSE', rooms[room].currentVideo.state);
     });
   
     socket.on('VIDEO_BUFFER', (data) => {
       console.log(data);
       rooms[room].currentVideo.buffer(data.currTime);
-  
+      
       socket.to(room).broadcast.emit('VIDEO_BUFFER', rooms[room].currentVideo.currTime);
-    });
-
-    // Chat message
-    socket.on('chatMessage', msg => {
-      const username = users[socket.id];
-
-      io.to(room).emit('message', formatMessage(username, msg));
     });
   
     socket.on('disconnect', () => {
-      console.log('A user left the room');
+      // Broadcast when user leaves the room
+      socket.broadcast.to(room).emit('message', formatMessage(botName, `${user} has left the room`));
 
       userLeave(users, socket.id);
   
