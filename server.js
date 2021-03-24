@@ -63,10 +63,12 @@ io.on('connection', (socket) => {
 
     socket.join(room);
 
+    // CHAT EVENTS
+
     // Welcome current user
     socket.emit('message', formatMessage(botName, 'Welcome to weWatch!'));
 
-    // Broadcasts when a user connects
+    // Broadcasts message when a user connects
     socket.broadcast.to(room).emit('message', formatMessage(botName, `${user} has joined the room`));
     
     // Send users list to room
@@ -74,10 +76,12 @@ io.on('connection', (socket) => {
     
     console.log('rooms:', rooms);
 
-    // Chat message
     socket.on('chatMessage', msg => {
       io.to(room).emit('message', formatMessage(user, msg));
     });
+
+
+    // VIDEO EVENTS
 
     // If currentVideo exists in room, send it to new user
     if (rooms[room].currentVideo) {
@@ -88,8 +92,7 @@ io.on('connection', (socket) => {
       }
       socket.emit('SYNC', videoData);
     }
-    
-    // Video Events
+
     socket.on('VIDEO_LOAD', (data) => {
       console.log(data);
       rooms[room].currentVideo = new Video(data.videoId);
@@ -120,7 +123,24 @@ io.on('connection', (socket) => {
       
       socket.to(room).broadcast.emit('VIDEO_BUFFER', rooms[room].currentVideo.currTime);
     });
-  
+
+    // WEBRTC EVENTS
+    socket.on('offer', offer => {
+      console.log('Offer received from client');
+      socket.to(room).emit('offer', offer);
+    });
+
+    socket.on('answer', answer => {
+      console.log('Answer received from client');
+      socket.to(room).emit('answer', answer);
+    });
+
+    socket.on('ice-candidate', candidate => {
+      console.log('Candidate received from client');
+      socket.to(room).emit('ice-candidate', candidate);
+    });
+
+    // User disconnects
     socket.on('disconnect', () => {
       // Broadcast when user leaves the room
       socket.broadcast.to(room).emit('message', formatMessage(botName, `${user} has left the room`));

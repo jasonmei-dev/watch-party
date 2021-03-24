@@ -191,3 +191,140 @@ function outputUserList(users) {
     ${usersArr.map(user => `<li>${user}</li>`).join('')}
   `;
 }
+
+// WebRTC
+let pc; // peer connection
+let localStream;
+
+const localVideo = document.getElementById('localVideo');
+const remoteVideo = document.getElementById('remoteVideo');
+
+const startButton = document.getElementById('startButton');
+const callButton = document.getElementById('callButton');
+const hangupButton = document.getElementById('hangupButton');
+
+startButton.addEventListener('click', startAction);
+callButton.addEventListener('click', callAction);
+hangupButton.addEventListener('click', hangupAction);
+
+const mediaContraints = {
+  video: true,
+  audio: true
+}
+
+const pcConfig = {
+  iceServers: [{
+    urls: 'stun:stun.l.google.com:19302'
+  }]
+};
+
+function startAction() {
+  startButton.disabled = true;
+  callButton.disabled = false;
+  
+  // Get video media stream from camera
+  navigator.mediaDevices.getUserMedia(mediaContraints)
+    .then(mediaStream => {
+      localStream = mediaStream
+      localVideo.srcObject = mediaStream;
+    });
+}
+
+function callAction() {
+  callButton.disabled = true;
+  hangupButton.disabled = false;
+  // createPeerConnection();
+
+  pc = new RTCPeerConnection(pcConfig);
+
+  // event handlers
+  pc.ontrack = handleTrackEvent;
+  pc.onicecandidate = handleICECandidateEvent;
+  // pc.onnegotiationneeded = handleNegotiationNeededEvent;
+  // pc.addTrack(localStream.getTracks()[0], localStream);
+  localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+  pc.createOffer().then(description => {
+    pc.setLocalDescription(description);
+    console.log('OFFER SENT', description);
+    socket.emit('offer', description);
+  })
+}
+
+function hangupAction() {
+  pc.close();
+  pc = null;
+  hangupButton.disabled = true;
+  callButton.disabled = false;
+}
+
+// function createPeerConnection() {
+//   pc = new RTCPeerConnection(pcConfig);
+//   // event handlers
+//   pc.ontrack = handleTrackEvent;
+//   pc.onicecandidate = handleICECandidateEvent;
+//   pc.onnegotiationneeded = handleNegotiationNeededEvent;
+// }
+
+// function handleNegotiationNeededEvent() {
+//   pc.createOffer().then(description => {
+//     pc.setLocalDescription(description);
+//     console.log('OFFER sent', description);
+//     socket.emit('offer', description);
+//   })
+// }
+
+function handleICECandidateEvent(event) {
+  if (event.candidate) {
+    const candidate = {
+      type: 'candidate',
+      label: event.candidate.sdpMLineIndex,
+      id: event.candidate.sdpMid,
+      candidate: event.candidate.candidate
+    }
+    console.log('ICE CANDIDATE SENT');
+    socket.emit('ice-candidate', candidate);
+  }
+}
+
+function handleTrackEvent(event) {
+  remoteVideo.srcObject = event.streams[0];
+}
+
+// Recieving offer
+socket.on('offer', offer => {
+  console.log('OFFER RECEIVED', offer)
+
+  // create peer connection
+  pc = new RTCPeerConnection(pcConfig);
+  pc.ontrack = handleTrackEvent;
+  pc.onicecandidate = handleICECandidateEvent;
+
+  // pc.addTrack(localStream.getTracks()[0], localStream);
+  localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+  pc.setRemoteDescription(new RTCSessionDescription(offer));
+
+  // create and send answer
+  pc.createAnswer().then(description => {
+    pc.setLocalDescription(description);
+    console.log('ANSWER SENT', description);
+    socket.emit('answer', description);
+  })
+})
+
+// Receiving answer
+socket.on('answer', answer => {
+  console.log('ANSWER RECEIVED');
+  pc.setRemoteDescription(new RTCSessionDescription(answer));
+})
+
+// Receving ice candidate
+socket.on('ice-candidate', event => {
+  console.log('ICE CANDIDATE RECEIVED');
+  const iceCandidate = new RTCIceCandidate({
+    sdpMLineIndex: event.label,
+    candidate: event.candidate
+  });
+  pc.addIceCandidate(iceCandidate);
+})
+
