@@ -198,16 +198,17 @@ let localStream;
 
 const localVideo = document.getElementById('localVideo');
 const remoteVideo = document.getElementById('remoteVideo');
+const videoGrid = document.getElementById('video-grid');
 
-const startButton = document.getElementById('startButton');
 const callButton = document.getElementById('callButton');
 const hangupButton = document.getElementById('hangupButton');
+const muteButton = document.getElementById('muteButton');
 
-startButton.addEventListener('click', startAction);
 callButton.addEventListener('click', callAction);
 hangupButton.addEventListener('click', hangupAction);
+muteButton.addEventListener('click', toggleMute);
 
-const mediaContraints = {
+const mediaConstraints = {
   video: true,
   audio: true
 }
@@ -218,61 +219,97 @@ const pcConfig = {
   }]
 };
 
-function startAction() {
-  startButton.disabled = true;
-  callButton.disabled = false;
-  
-  // Get video media stream from camera
-  navigator.mediaDevices.getUserMedia(mediaContraints)
-    .then(mediaStream => {
-      localStream = mediaStream
-      localVideo.srcObject = mediaStream;
-    });
-}
+// function addVideoStream(stream) {
+//   const video = document.createElement('video');
+
+//   video.srcObject = stream;
+
+//   video.addEventListener('loadedmetadata', () => {
+//     video.play();
+//   })
+
+//   videoGrid.append(video);
+// }
 
 function callAction() {
+  createPeerConnection();
+  
+  // get local media stream
+  navigator.mediaDevices.getUserMedia(mediaConstraints)
+  .then(mediaStream => {
+    localStream = mediaStream;
+    localVideo.srcObject = mediaStream;
+
+    // add audio and video tracks to peer connection
+    localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+  })
+
+  socket.emit('start-call', { event: 'start-call' });
+}
+
+function toggleMute() {
+  console.log('clicked mute');
+  if (remoteVideo.muted) {
+    remoteVideo.muted = false;
+    muteButton.innerHTML = 'Mute';
+  } else {
+    remoteVideo.muted = true;
+    muteButton.innerHTML = 'Unmute';
+  }
+}
+
+socket.on('start-call', data => {
   callButton.disabled = true;
   hangupButton.disabled = false;
-  // createPeerConnection();
+  muteButton.disabled = false;
+})
 
+function hangupAction() {
+  socket.emit('hang-up', {event: 'hang-up'});
+}
+
+socket.on('hang-up', data => {
+  callButton.disabled = false;
+  hangupButton.disabled = true;
+  muteButton.disabled = true;
+  remoteVideo.muted = false;
+  muteButton.innerHTML = 'Mute';
+  closeVideoCall();
+});
+
+function closeVideoCall() {
+  if (pc) {
+    pc.ontrack = null;
+    pc.onicecandidate = null;
+    pc.onnegotiationneeded = null;
+
+    if(remoteVideo.srcObject) {
+      remoteVideo.srcObject.getTracks().forEach(track => track.stop());
+    }
+
+    if (localVideo.srcObject) {
+      localVideo.srcObject.getTracks().forEach(track => track.stop());
+    }
+
+    pc.close();
+    pc = null;
+  }
+}
+
+function createPeerConnection() {
   pc = new RTCPeerConnection(pcConfig);
-
-  // event handlers
   pc.ontrack = handleTrackEvent;
   pc.onicecandidate = handleICECandidateEvent;
-  // pc.onnegotiationneeded = handleNegotiationNeededEvent;
-  // pc.addTrack(localStream.getTracks()[0], localStream);
-  localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+  pc.onnegotiationneeded = handleNegotiationNeededEvent;
+}
 
+function handleNegotiationNeededEvent() {
   pc.createOffer().then(description => {
     pc.setLocalDescription(description);
-    console.log('OFFER SENT', description);
+    console.log('OFFER sent', description);
     socket.emit('offer', description);
   })
 }
-
-function hangupAction() {
-  pc.close();
-  pc = null;
-  hangupButton.disabled = true;
-  callButton.disabled = false;
-}
-
-// function createPeerConnection() {
-//   pc = new RTCPeerConnection(pcConfig);
-//   // event handlers
-//   pc.ontrack = handleTrackEvent;
-//   pc.onicecandidate = handleICECandidateEvent;
-//   pc.onnegotiationneeded = handleNegotiationNeededEvent;
-// }
-
-// function handleNegotiationNeededEvent() {
-//   pc.createOffer().then(description => {
-//     pc.setLocalDescription(description);
-//     console.log('OFFER sent', description);
-//     socket.emit('offer', description);
-//   })
-// }
 
 function handleICECandidateEvent(event) {
   if (event.candidate) {
@@ -295,26 +332,28 @@ function handleTrackEvent(event) {
 socket.on('offer', offer => {
   console.log('OFFER RECEIVED', offer)
 
-  // create peer connection
-  pc = new RTCPeerConnection(pcConfig);
-  pc.ontrack = handleTrackEvent;
-  pc.onicecandidate = handleICECandidateEvent;
+  createPeerConnection();
 
-  // pc.addTrack(localStream.getTracks()[0], localStream);
-  localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-  pc.setRemoteDescription(new RTCSessionDescription(offer));
+  pc.setRemoteDescription(new RTCSessionDescription(offer)).then(() => {
+    return navigator.mediaDevices.getUserMedia(mediaConstraints);
+  }).then(mediaStream => {
+    localStream = mediaStream;
+    localVideo.srcObject = mediaStream;
 
-  // create and send answer
-  pc.createAnswer().then(description => {
+    // add audio and video tracks to peer connection
+    localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+  }).then(() => {
+    return pc.createAnswer();
+  }).then(description => {
     pc.setLocalDescription(description);
     console.log('ANSWER SENT', description);
     socket.emit('answer', description);
-  })
+  }).catch(console.log);
 })
 
 // Receiving answer
 socket.on('answer', answer => {
-  console.log('ANSWER RECEIVED');
+  console.log('ANSWER RECEIVED', answer);
   pc.setRemoteDescription(new RTCSessionDescription(answer));
 })
 

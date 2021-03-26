@@ -140,6 +140,16 @@ io.on('connection', (socket) => {
       socket.to(room).emit('ice-candidate', candidate);
     });
 
+    socket.on('start-call', data => {
+      console.log('starting call');
+      io.to(room).emit('start-call', data);
+    });
+
+    socket.on('hang-up', data => {
+      console.log('hanging up all clients');
+      io.to(room).emit('hang-up', data);
+    });
+
     // User disconnects
     socket.on('disconnect', () => {
       // Broadcast when user leaves the room
