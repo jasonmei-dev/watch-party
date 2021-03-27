@@ -161,7 +161,7 @@ io.on('connection', (socket) => {
       io.to(room).emit('roomUsers', { users });
       
       // Delete room if there are no users
-      // if (rooms[room].users.length === 0) delete rooms[room];
+      if (Object.keys(rooms[room].users).length === 0) delete rooms[room];
       console.log('rooms', rooms);
     });
   });

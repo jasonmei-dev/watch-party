@@ -17,8 +17,9 @@
 body {
   font-family: "Montserrat", sans-serif;
   /* font-family: Arial, Helvetica, sans-serif; */
-  font-size: 20px;
+  font-size: 16px;
   line-height: 1.6;
+  background: var(--light-color);
 }
 
 /* Navbar */
@@ -29,6 +30,7 @@ body {
   background: coral;
   color: #fff;
   padding: 0 30px;
+  font-size: 20px;
 }
 
 ul {
@@ -48,23 +50,26 @@ a:hover {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
+  margin: 30px auto;
 }
 
 .video-container {
-  /* text-align: center; */
+  display: flex;
+  flex-direction: column;
 }
 
 /* Search Bar */
-.search {
-  margin: 20px auto;
+.search-form {
+  /* margin: 20px auto; */
+  display: flex;
 }
 
-.search input {
-  width: 50%;
-  font-size: 1rem;
-  padding: 0.5rem;
-  margin: 20px auto;
+.search-form input {
+  font-size: 16px;
+  padding: 5px;
+  height: 40px;
+  flex: 1;
 }
 
 .button {
@@ -81,16 +86,31 @@ a:hover {
 
 /* Chat */
 .chat-container {
-  max-height: 500px;
-  /* height: 500px; */
-  /* width: 100%; */
-  /* overflow: hidden; */
+  max-width: 900px;
+  background: #fff;
+  overflow: hidden;
+  height: 100%;
+  flex: 1 1 auto;
 }
 
-.users-container {
-  border: 1px solid black;
-  /* height: 100%; */
-  /* width: 100%; */
+.chat-main {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+}
+
+.chat-sidebar {
+  background: var(--dark-color-b);
+  color: #fff;
+  padding: 20px 20px 60px;
+  overflow-y: scroll;
+}
+
+.chat-sidebar h3 {
+  margin-bottom: 15px;
+}
+
+.chat-sidebar ul li {
+  padding: 10px 0;
 }
 
 .chat-messages {
@@ -132,4 +152,33 @@ a:hover {
   padding: 5px;
   height: 40px;
   flex: 1;
+}
+
+/* WebRTC */
+.camerabox {
+  width: 500px;
+  height: 375px;
+  border: 1px solid black;
+  position: relative;
+  overflow: auto;
+}
+
+#remoteVideo {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+#localVideo {
+  width: 120px;
+  height: 90px;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 0 4px black;
+}
+
+video {
+  object-fit: cover;
 }

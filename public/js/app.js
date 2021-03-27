@@ -23,6 +23,8 @@ socket.on('roomUsers', ({ users }) => {
 // Message from server
 socket.on('message', message => {
   outputMessage(message);
+
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 });
 
 socket.on('SYNC', data => {
@@ -50,7 +52,7 @@ socket.on('VIDEO_BUFFER', (data) => {
 });
 
 // SEARCH BAR
-const $searchBar = document.querySelector('.search')
+const $searchBar = document.querySelector('.search-form')
 $searchBar.addEventListener('submit', (e) => {
   e.preventDefault();
   const url = $searchBar.elements.youtube_url.value;
@@ -100,16 +102,12 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 // Create <iframe> and YouTube player after API code loads
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
-    height: '390', // default
-    width: '640', // default
-    // height: '468', // x1.2
-    // width: '768', // x1.2
-    // height: '487.5', // x1.25
-    // width: '800', // x1.25
-    // height: '585', // x1.5
-    // width: '960', // x1.5
+    // height: '390', // default
+    // width: '640', // default
+    height: '468', // x1.2
+    width: '768', // x1.2
     playerVars: {
-      'mute': 1
+      // 'mute': 1
     },
     events: {
       onReady: onPlayerReady,
@@ -219,18 +217,6 @@ const pcConfig = {
   }]
 };
 
-// function addVideoStream(stream) {
-//   const video = document.createElement('video');
-
-//   video.srcObject = stream;
-
-//   video.addEventListener('loadedmetadata', () => {
-//     video.play();
-//   })
-
-//   videoGrid.append(video);
-// }
-
 function callAction() {
   createPeerConnection();
   
@@ -239,7 +225,6 @@ function callAction() {
   .then(mediaStream => {
     localStream = mediaStream;
     localVideo.srcObject = mediaStream;
-
     // add audio and video tracks to peer connection
     localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
   })
@@ -248,7 +233,7 @@ function callAction() {
 }
 
 function toggleMute() {
-  console.log('clicked mute');
+  // console.log('clicked mute');
   if (remoteVideo.muted) {
     remoteVideo.muted = false;
     muteButton.innerHTML = 'Mute';
@@ -306,7 +291,7 @@ function createPeerConnection() {
 function handleNegotiationNeededEvent() {
   pc.createOffer().then(description => {
     pc.setLocalDescription(description);
-    console.log('OFFER sent', description);
+    // console.log('OFFER sent', description);
     socket.emit('offer', description);
   })
 }
@@ -319,7 +304,7 @@ function handleICECandidateEvent(event) {
       id: event.candidate.sdpMid,
       candidate: event.candidate.candidate
     }
-    console.log('ICE CANDIDATE SENT');
+    // console.log('ICE CANDIDATE SENT');
     socket.emit('ice-candidate', candidate);
   }
 }
@@ -330,8 +315,7 @@ function handleTrackEvent(event) {
 
 // Recieving offer
 socket.on('offer', offer => {
-  console.log('OFFER RECEIVED', offer)
-
+  // console.log('OFFER RECEIVED', offer)
   createPeerConnection();
 
   pc.setRemoteDescription(new RTCSessionDescription(offer)).then(() => {
@@ -339,27 +323,26 @@ socket.on('offer', offer => {
   }).then(mediaStream => {
     localStream = mediaStream;
     localVideo.srcObject = mediaStream;
-
     // add audio and video tracks to peer connection
     localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
   }).then(() => {
     return pc.createAnswer();
   }).then(description => {
     pc.setLocalDescription(description);
-    console.log('ANSWER SENT', description);
+    // console.log('ANSWER SENT', description);
     socket.emit('answer', description);
   }).catch(console.log);
 })
 
 // Receiving answer
 socket.on('answer', answer => {
-  console.log('ANSWER RECEIVED', answer);
+  // console.log('ANSWER RECEIVED', answer);
   pc.setRemoteDescription(new RTCSessionDescription(answer));
 })
 
 // Receving ice candidate
 socket.on('ice-candidate', event => {
-  console.log('ICE CANDIDATE RECEIVED');
+  // console.log('ICE CANDIDATE RECEIVED');
   const iceCandidate = new RTCIceCandidate({
     sdpMLineIndex: event.label,
     candidate: event.candidate

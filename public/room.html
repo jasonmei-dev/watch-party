@@ -21,25 +21,25 @@
     </ul>
   </nav>
   
-  <div id="video-grid">
-    <video id="localVideo" autoplay muted></video>
-    <video id="remoteVideo" autoplay></video>
-  </div>
-
-  <div id='webRTC-buttons'>
-    <button id="callButton">Start Call</button>
-    <button id="muteButton" disabled>Mute</button>
-    <button id="hangupButton" disabled>Hang Up</button>
-  </div>
-
   <div class="room-container">
     <div class="video-container">
-      <form class='search'>
+      <div id="player"></div>
+
+      <form class='search-form'>
         <input type="text" name="youtube_url" placeholder="Enter YouTube URL" required>
         <button type="submit" class="button">Load Video</button>
       </form>
-  
-      <div id="player"></div>
+    </div>
+
+    <div class="stream-container">
+      <div class="camerabox">
+        <video id="remoteVideo" autoplay></video>
+        <video id="localVideo" autoplay muted></video>
+      </div>
+    
+      <button id="callButton">Start Call</button>
+      <button id="muteButton" disabled>Mute</button>
+      <button id="hangupButton" disabled>Hang Up</button>
     </div>
   
     <div class="chat-container">
@@ -53,15 +53,10 @@
       <div class="chat-form-container">
         <form id="chat-form">
           <input type="text" id='msg' placeholder='Enter Message' autocomplete='off' required />
-          <button type='submit' class='button'>Send</button>
+          <button type='submit' class='button'><i class="fas fa-paper-plane"></i> Send</button>
         </form>
       </div>
     </div>
-  
-    <!-- <div class="users-container">
-      <h3>Users</h3>
-      <ul id="users"></ul>
-    </div> -->
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
