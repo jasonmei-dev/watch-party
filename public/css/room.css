@@ -22,17 +22,6 @@ body {
   background: var(--light-color);
 }
 
-/* Navbar */
-#navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: coral;
-  color: #fff;
-  padding: 0 30px;
-  font-size: 20px;
-}
-
 ul {
   list-style: none;
 }
@@ -46,6 +35,18 @@ a:hover {
   color: #333;
 }
 
+/* Navbar */
+#navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: coral;
+  color: #fff;
+  padding: 0 30px;
+  font-size: 20px;
+}
+
+/* Room container */
 .room-container {
   display: flex;
   flex-wrap: wrap;

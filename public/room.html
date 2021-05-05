@@ -8,12 +8,14 @@
       src="https://kit.fontawesome.com/00ebd93dd5.js"
       crossorigin="anonymous"
     ></script>
-  <link rel="stylesheet" href="css/room.css">
+  <link rel="stylesheet" href="css/room2.css">
   <title>weWatch</title>
 </head>
 <body>
   <nav id="navbar">
-    <a href="/"><h1>weWatch</h1></a>
+    <div class="logo">
+      <h1><a href="/">weWatch</a></h1>
+    </div>
     <ul>
       <li>
         <a href="/"><i class="fas fa-sign-out-alt"></i></i> Leave Room</a>
@@ -21,42 +23,51 @@
     </ul>
   </nav>
   
-  <div class="room-container">
-    <div class="video-container">
-      <div id="player"></div>
-
+  <div class="content">
+    <main class="video-container">
       <form class='search-form'>
         <input type="text" name="youtube_url" placeholder="Enter YouTube URL" required>
         <button type="submit" class="button">Load Video</button>
       </form>
-    </div>
-
-    <div class="stream-container">
-      <div class="camerabox">
-        <video id="remoteVideo" autoplay></video>
-        <video id="localVideo" autoplay muted></video>
-      </div>
-    
-      <button id="callButton">Start Call</button>
-      <button id="muteButton" disabled>Mute</button>
-      <button id="hangupButton" disabled>Hang Up</button>
-    </div>
+      <div id="player"></div>
+    </main>
   
-    <div class="chat-container">
-      <div class="chat-main">
-        <div class="chat-messages"></div>
-        <div class="chat-sidebar">
-          <h3><i class="fas fa-users"></i> Users</h3>
-          <ul id="users"></ul>
+    <aside class="sidebar">
+      <div class="sidebar-nav">
+        <ul>
+          <li class="btn">Chat</li>
+          <li class="btn">Video</li>
+          <li class="btn">Users</li>
+        </ul>
+      </div>
+
+      <div class="chat-container">
+        <div class="chat-main">
+          <div class="chat-messages"></div>
+          <div class="chat-sidebar">
+            <h3><i class="fas fa-users"></i> Users</h3>
+            <ul id="users"></ul>
+          </div>
+        </div>
+        <div class="chat-form-container">
+          <form id="chat-form">
+            <input type="text" id='msg' placeholder='Enter Message' autocomplete='off' required />
+            <button type='submit' class='button'><i class="fas fa-paper-plane"></i> Send</button>
+          </form>
         </div>
       </div>
-      <div class="chat-form-container">
-        <form id="chat-form">
-          <input type="text" id='msg' placeholder='Enter Message' autocomplete='off' required />
-          <button type='submit' class='button'><i class="fas fa-paper-plane"></i> Send</button>
-        </form>
+
+      <div class="stream-container">
+        <div class="camerabox">
+          <video id="remoteVideo" autoplay></video>
+          <video id="localVideo" autoplay muted></video>
+        </div>
+      
+        <button id="callButton">Start Call</button>
+        <button id="muteButton" disabled>Mute</button>
+        <button id="hangupButton" disabled>Hang Up</button>
       </div>
-    </div>
+    </aside>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
