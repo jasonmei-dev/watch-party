@@ -35,19 +35,15 @@
     <aside class="sidebar">
       <div class="sidebar-nav">
         <ul>
-          <li class="btn">Chat</li>
-          <li class="btn">Video</li>
-          <li class="btn">Users</li>
+          <li class="nav-btn active">Chat</li>
+          <li class="nav-btn">Video</li>
+          <li class="nav-btn">Users</li>
         </ul>
       </div>
 
       <div class="chat-container">
         <div class="chat-main">
           <div class="chat-messages"></div>
-          <div class="chat-sidebar">
-            <h3><i class="fas fa-users"></i> Users</h3>
-            <ul id="users"></ul>
-          </div>
         </div>
         <div class="chat-form-container">
           <form id="chat-form">
@@ -57,7 +53,7 @@
         </div>
       </div>
 
-      <div class="stream-container">
+      <div class="stream-container hidden">
         <div class="camerabox">
           <video id="remoteVideo" autoplay></video>
           <video id="localVideo" autoplay muted></video>
@@ -66,6 +62,11 @@
         <button id="callButton">Start Call</button>
         <button id="muteButton" disabled>Mute</button>
         <button id="hangupButton" disabled>Hang Up</button>
+      </div>
+
+      <div class="users-container hidden">
+        <h3><i class="fas fa-users"></i> Users</h3>
+        <ul id="users"></ul>
       </div>
     </aside>
   </div>

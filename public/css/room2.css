@@ -14,6 +14,12 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
 body {
   font-family: "Montserrat", sans-serif;
   /* font-family: Arial, Helvetica, sans-serif; */
@@ -44,26 +50,29 @@ a:hover {
   color: #fff;
   padding: 0 30px;
   font-size: 20px;
-  /* position: fixed;
-  top: 0; */
+  /* position: fixed; */
+  /* top: 0; */
 }
 
 /* Room container */
 .content {
-  /* display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  margin: 30px auto; */
+  display: flex;
+  min-height: 100%;
+  /* height: 100%; */
+  /* flex-wrap: wrap; */
+  /* align-items: center; */
+  /* justify-content: center; */
+  /* margin: 30px auto; */
 
-  display: grid;
-  grid-template-columns: 4fr 2fr;
+  /* display: grid; */
+  /* grid-template-columns: 4fr 2fr; */
   /* padding: 100px; */
 }
 
 /* Video-container */
 .video-container {
-  height: 100%;
+  /* height: 100%; */
+  flex: 3;
 }
 
 .video-container .search-form {
@@ -81,6 +90,16 @@ a:hover {
 
 /* Sidebar */
 .sidebar {
+  flex: 1;
+  /* min-height: 100%; */
+}
+
+.sidebar .active {
+  border-bottom: 2px solid var(--dark-color-a);
+}
+
+.sidebar .hidden {
+  display: none;
 }
 
 .sidebar .sidebar-nav {
@@ -93,7 +112,27 @@ a:hover {
   justify-content: center;
 }
 
-.sidebar .sidebar-nav .btn {
-  border: 1px solid black;
+.sidebar .sidebar-nav .nav-btn {
+  /* border: 1px solid black; */
   padding: 10px 20px;
+}
+
+/* Chat */
+.chat-container {
+  padding: 20px;
+  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100%;
+}
+
+.chat-container .chat-main {
+  border: 1px solid red;
+  /* position: relative; */
+  /* flex: 3; */
+}
+
+.chat-container .chat-form-container {
+  /* flex: 1; */
 }
