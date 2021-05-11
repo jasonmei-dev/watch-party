@@ -24,15 +24,15 @@
   </nav>
   
   <div class="content">
-    <main class="video-container">
+    <div class="video-container">
       <form class='search-form'>
         <input type="text" name="youtube_url" placeholder="Enter YouTube URL" required>
         <button type="submit" class="button">Load Video</button>
       </form>
       <div id="player"></div>
-    </main>
+    </div>
   
-    <aside class="sidebar">
+    <div class="sidebar">
       <div class="sidebar-nav">
         <ul>
           <li class="nav-btn active">Chat</li>
@@ -45,12 +45,10 @@
         <div class="chat-main">
           <div class="chat-messages"></div>
         </div>
-        <div class="chat-form-container">
-          <form id="chat-form">
-            <input type="text" id='msg' placeholder='Enter Message' autocomplete='off' required />
-            <button type='submit' class='button'><i class="fas fa-paper-plane"></i> Send</button>
-          </form>
-        </div>
+        <form id="chat-form">
+          <input type="text" id='msg' placeholder='Enter Message' autocomplete='off' required />
+          <button type='submit' class='button'><i class="fas fa-paper-plane"></i> Send</button>
+        </form>
       </div>
 
       <div class="stream-container hidden">
@@ -68,7 +66,7 @@
         <h3><i class="fas fa-users"></i> Users</h3>
         <ul id="users"></ul>
       </div>
-    </aside>
+    </div>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
