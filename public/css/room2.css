@@ -1,8 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 
 :root {
-  --dark-color-a: #667aff;
-  --dark-color-b: #7386ff;
+  --dark-blue: #667aff;
+  --light-blue: #7386ff;
   --light-color: #e6e9ff;
   --success-color: #5cb85c;
   --error-color: #d9534f;
@@ -19,6 +19,8 @@ body {
   font-size: 16px;
   line-height: 1.6;
   background: var(--light-color);
+  /* background: rgba(0, 0, 0, 0.87); */
+  /* background: #fff; */
 }
 
 ul {
@@ -32,6 +34,10 @@ a {
 
 a:hover {
   color: #333;
+}
+
+.btn:hover {
+  cursor: pointer;
 }
 
 /* Navbar */
@@ -89,7 +95,7 @@ a:hover {
 }
 
 .sidebar .sidebar-nav .active {
-  border-bottom: 2px solid var(--dark-color-a);
+  border-bottom: 2px solid var(--dark-blue);
 }
 
 .sidebar .sidebar-nav .hidden {
@@ -102,15 +108,18 @@ a:hover {
   justify-content: center;
 }
 
-.sidebar .sidebar-nav .nav-btn {
-  /* border: 1px solid black; */
+.sidebar .sidebar-nav ul li:not(:last-child) {
+  border-right: 1px solid black;
+}
+
+.sidebar .sidebar-nav li {
   padding: 10px 20px;
 }
 
 /* Chat */
 .chat-container {
   padding: 20px;
-  /* border: 1px solid black; */
+  border: 1px solid black;
   display: flex;
   flex-direction: column;
   /* justify-content: space-between; */
@@ -122,11 +131,12 @@ a:hover {
   /* background-color: #fff; */
   min-height: 100%;
   /* position: relative; */
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
   flex: 1;
 }
 
 .chat-container .chat-main .chat-messages {
+  /* max-height: 100%; */
   overflow-y: scroll;
 }
 
@@ -145,10 +155,19 @@ a:hover {
   margin-bottom: 7px;
 }
 
-.chat-container #chat-form {
+.chat-form-container {
+  padding: 20px 0 0 0;
+  /* background-color: var(--dark-blue); */
+  /* border: 1px solid black; */
+}
+
+.chat-form-container form {
   display: flex;
 }
 
-.chat-container #chat-form input {
+.chat-form-container input[type="text"] {
+  font-size: 16px;
+  padding: 5px;
+  height: 35px;
   width: 100%;
 }
