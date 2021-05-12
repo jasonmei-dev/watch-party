@@ -1,13 +1,53 @@
 const chatForm = document.querySelector('#chat-form');
 const chatMessages = document.querySelector('.chat-messages');
+const chatBtn = document.querySelector('.chat-btn');
+const streamBtn = document.querySelector('.stream-btn');
+const usersBtn = document.querySelector('.users-btn');
 const userList = document.querySelector('#users');
 const room = window.location.pathname.substring(1);
+
+const chatContainer = document.querySelector('.chat-container');
+const streamContainer = document.querySelector('.stream-container');
+const usersContainer = document.querySelector('.users-container');
 
 let player;
 let serverPlay = false;
 let serverPause = false;
 let serverBuffer = false;
 let serverVideo;
+
+chatBtn.addEventListener('click', (e)=> {
+  console.log('chat button clicked!')
+  chatContainer.style.display = "flex";
+  streamContainer.classList.add('hidden');
+  usersContainer.classList.add('hidden');
+
+  chatBtn.classList.add('active')
+  streamBtn.classList.remove('active');
+  usersBtn.classList.remove('active')
+})
+
+streamBtn.addEventListener('click', (e)=> {
+  console.log('stream button clicked!')
+  chatContainer.style.display = "none";
+  streamContainer.classList.remove('hidden');
+  usersContainer.classList.add('hidden');
+
+  streamBtn.classList.add('active');
+  chatBtn.classList.remove('active')
+  usersBtn.classList.remove('active')
+})
+
+usersBtn.addEventListener('click', (e)=> {
+  console.log('users button clicked!')
+  usersContainer.classList.remove('hidden');
+  chatContainer.style.display = "none";
+  streamContainer.classList.add('hidden');
+  
+  usersBtn.classList.add('active')
+  streamBtn.classList.remove('active');
+  chatBtn.classList.remove('active')
+})
 
 // SOCKET stuff
 const socket = io(); // Establish socket connection
@@ -104,8 +144,10 @@ function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
     // height: '390', // default
     // width: '640', // default
-    height: '468', // x1.2
-    width: '768', // x1.2
+    // height: '468', // x1.2
+    // width: '768', // x1.2
+    // height: '100%',
+    // width: '100%',
     playerVars: {
       // 'mute': 1
     },

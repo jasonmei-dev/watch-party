@@ -24,8 +24,6 @@ body {
   font-size: 16px;
   line-height: 1.6;
   background: var(--light-color);
-  /* background: rgba(0, 0, 0, 0.87); */
-  /* background: #fff; */
 }
 
 ul {
@@ -105,21 +103,28 @@ a:hover {
 }
 
 .sidebar .sidebar-nav .active {
-  border-bottom: 2px solid var(--dark-blue);
+  border-bottom: 2px solid black;
 }
 
 .sidebar .sidebar-nav ul {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   justify-content: center;
 }
 
 .sidebar .sidebar-nav ul li:not(:last-child) {
-  border-right: 1px solid black;
+  border-right: 1px dotted var(--dark-blue);
 }
 
 .sidebar .sidebar-nav li {
   padding: 10px 20px;
+  /* border: solid black 1px; */
+  /* background-color: var(--light-blue); */
+  /* color: #fff; */
+}
+
+.sidebar .sidebar-nav li:hover {
+  opacity: 0.8;
 }
 
 /* Chat */
