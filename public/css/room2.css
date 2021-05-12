@@ -14,6 +14,11 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 body {
   font-family: "Montserrat", sans-serif;
   font-size: 16px;
@@ -40,6 +45,10 @@ a:hover {
   cursor: pointer;
 }
 
+.hidden {
+  display: none;
+}
+
 /* Navbar */
 #navbar {
   display: flex;
@@ -49,20 +58,21 @@ a:hover {
   color: #fff;
   padding: 0 30px;
   font-size: 20px;
+  height: 60px;
 }
 
 /* Room container */
 .content {
   /* border: 1px solid blue; */
   display: flex;
-  /* min-height: calc(100% - 48px); */
+  min-height: calc(100% - 60px);
 }
 
 /* Video-container */
 .video-container {
   flex: 3;
   padding: 20px;
-  /* border: 1px solid black; */
+  /* border: 1px solid orange; */
 }
 
 .video-container .search-form {
@@ -79,9 +89,9 @@ a:hover {
 .video-container .search-form .button {
 }
 
-.video-container iframe {
+.video-container #player {
   width: 100%;
-  height: 640px;
+  height: 600px;
 }
 
 /* Sidebar */
@@ -96,10 +106,6 @@ a:hover {
 
 .sidebar .sidebar-nav .active {
   border-bottom: 2px solid var(--dark-blue);
-}
-
-.sidebar .sidebar-nav .hidden {
-  display: none;
 }
 
 .sidebar .sidebar-nav ul {
@@ -118,25 +124,22 @@ a:hover {
 
 /* Chat */
 .chat-container {
+  /* border: 1px solid red; */
   padding: 20px;
-  border: 1px solid black;
   display: flex;
   flex-direction: column;
-  /* justify-content: space-between; */
   min-height: calc(100% - 47px);
 }
 
 .chat-container .chat-main {
-  /* border: 1px solid red; */
-  /* background-color: #fff; */
+  /* border: 1px solid green; */
   min-height: 100%;
-  /* position: relative; */
-  /* margin-bottom: 20px; */
   flex: 1;
 }
 
 .chat-container .chat-main .chat-messages {
-  /* max-height: 100%; */
+  /* border: 1px solid purple; */
+  max-height: 590px;
   overflow-y: scroll;
 }
 
@@ -152,7 +155,13 @@ a:hover {
 .chat-container .chat-main .chat-messages .message .meta {
   /* font-size: 16px; */
   font-weight: bold;
+  color: var(--dark-blue);
   margin-bottom: 7px;
+}
+
+.chat-container .chat-main .chat-messages .message .meta span {
+  font-size: 14px;
+  color: #777;
 }
 
 .chat-form-container {
