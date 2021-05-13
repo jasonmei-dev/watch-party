@@ -142,14 +142,8 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 // Create <iframe> and YouTube player after API code loads
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
-    // height: '390', // default
-    // width: '640', // default
-    // height: '468', // x1.2
-    // width: '768', // x1.2
-    // height: '100%',
-    // width: '100%',
     playerVars: {
-      // 'mute': 1
+      // 'mute': 1 // mute in dev mode
     },
     events: {
       onReady: onPlayerReady,

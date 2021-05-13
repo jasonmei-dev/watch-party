@@ -8,7 +8,6 @@
 
 body {
   font-family: "Montserrat", sans-serif;
-  /* font-family: Arial, Helvetica, sans-serif; */
   background-color: #e6e9ff;
   font-size: 20px;
   line-height: 1.6;
@@ -74,10 +73,6 @@ a:hover {
 .github-logo {
   font-size: 24px;
 }
-/* 
-.github-logo:hover {
-  color: #333;
-} */
 
 /* Modal */
 .modal {
