@@ -55,14 +55,16 @@
       </div>
 
       <div class="stream-container hidden">
-        <div class="camerabox">
-          <video id="remoteVideo" autoplay></video>
-          <video id="localVideo" autoplay muted></video>
+        <div class="stream-nav">
+          <button id="callButton">Start Call</button>
+          <button id="muteButton" disabled>Mute</button>
+          <button id="hangupButton" disabled>End Call</button>
         </div>
-      
-        <button id="callButton">Start Call</button>
-        <button id="muteButton" disabled>Mute</button>
-        <button id="hangupButton" disabled>Hang Up</button>
+
+        <div class="stream-videos">
+          <video id="localVideo" autoplay muted></video>
+          <video id="remoteVideo" autoplay></video>
+        </div>
       </div>
 
       <div class="users-container hidden">

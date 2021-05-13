@@ -95,6 +95,7 @@ a:hover {
 /* Sidebar */
 .sidebar {
   flex: 1;
+  /* background-color: var(--light-color); */
   border-left: 2px solid black;
 }
 
@@ -103,7 +104,8 @@ a:hover {
 }
 
 .sidebar .sidebar-nav .active {
-  border-bottom: 2px solid black;
+  border-bottom: 2px solid var(--dark-blue);
+  /* border-bottom: 2px solid #fff; */
 }
 
 .sidebar .sidebar-nav ul {
@@ -113,13 +115,13 @@ a:hover {
 }
 
 .sidebar .sidebar-nav ul li:not(:last-child) {
-  border-right: 1px dotted var(--dark-blue);
+  border-right: 1px dotted black;
 }
 
 .sidebar .sidebar-nav li {
   padding: 10px 20px;
   /* border: solid black 1px; */
-  /* background-color: var(--light-blue); */
+  background-color: lightgray;
   /* color: #fff; */
 }
 
@@ -145,6 +147,7 @@ a:hover {
 .chat-container .chat-main .chat-messages {
   /* border: 1px solid purple; */
   max-height: 590px;
+  padding: 0 10px;
   overflow-y: scroll;
 }
 
@@ -171,8 +174,6 @@ a:hover {
 
 .chat-form-container {
   padding: 20px 0 0 0;
-  /* background-color: var(--dark-blue); */
-  /* border: 1px solid black; */
 }
 
 .chat-form-container form {
@@ -184,4 +185,32 @@ a:hover {
   padding: 5px;
   height: 35px;
   width: 100%;
+}
+
+/* Video Call */
+.stream-container {
+  padding: 20px 40px;
+  /* border: 1px solid black; */
+}
+
+.stream-container .stream-nav {
+  /* display: flex; */
+  /* justify-content: center; */
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.stream-container .stream-videos {
+  /* border: 1px solid black; */
+  max-height: 650px;
+  overflow-y: scroll;
+}
+
+.stream-container .stream-videos video {
+  width: 100%;
+}
+
+/* Users */
+.users-container {
+  padding: 20px 40px;
 }
