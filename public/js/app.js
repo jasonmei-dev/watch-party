@@ -10,6 +10,8 @@ const chatContainer = document.querySelector('.chat-container');
 const streamContainer = document.querySelector('.stream-container');
 const usersContainer = document.querySelector('.users-container');
 
+const username = document.querySelector('.username');
+
 let player;
 let serverPlay = false;
 let serverPause = false;
@@ -54,6 +56,10 @@ const socket = io(); // Establish socket connection
 
 // Join room
 socket.emit('joinRoom', { room });
+
+socket.on('currentUser', user => {
+  username.innerHTML = user;
+});
 
 // Receive room users list from server
 socket.on('roomUsers', ({ users }) => {

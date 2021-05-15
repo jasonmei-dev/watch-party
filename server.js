@@ -63,6 +63,7 @@ io.on('connection', (socket) => {
 
     socket.join(room);
 
+    socket.emit('currentUser', user);
     // CHAT EVENTS
 
     // Welcome current user
