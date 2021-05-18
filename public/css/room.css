@@ -89,6 +89,8 @@ a:hover {
 .sidebar {
   flex: 1;
   border-left: 2px solid black;
+  /* display: flex; */
+  /* flex-direction: column; */
 }
 
 .sidebar .sidebar-nav {
@@ -122,7 +124,7 @@ a:hover {
   padding: 20px;
   display: flex;
   flex-direction: column;
-  min-height: calc(100% - 47px);
+  min-height: calc(100% - 80px);
 }
 
 .chat-container .chat-main {
@@ -131,7 +133,7 @@ a:hover {
 }
 
 .chat-container .chat-main .chat-messages {
-  max-height: 590px;
+  max-height: 550px;
   padding: 0 10px;
   overflow-y: scroll;
 }

@@ -44,6 +44,10 @@ app.get('/:room', (req, res) => {
   }
 });
 
+app.post('/change_name', (req, res) => {
+  console.log(req.body);
+})
+
 app.use(express.static('public'));
 
 

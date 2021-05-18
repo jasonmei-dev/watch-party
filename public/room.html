@@ -35,7 +35,11 @@
   
     <div class="sidebar">
       <div class="username-form">
-        <h3>My name is: <span class='username'></span></h3>
+        <form action="/change_name" method="POST">
+          <label for="name">My name is: </label>
+          <input type="text" name="name" id="name" class="username-input">
+          <button type="submit">Submit</button>
+        </form>
       </div>
 
       <div class="sidebar-nav">
