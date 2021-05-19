@@ -11,6 +11,8 @@ const streamContainer = document.querySelector('.stream-container');
 const usersContainer = document.querySelector('.users-container');
 
 const usernameInput = document.querySelector('.username-input');
+const roomID = document.querySelector('.room-id');
+const userID = document.querySelector('.user-id');
 
 let player;
 let serverPlay = false;
@@ -58,8 +60,10 @@ const socket = io(); // Establish socket connection
 socket.emit('joinRoom', { room });
 
 // Display username
-socket.on('currentUser', user => {
-  usernameInput.setAttribute("value", user);
+socket.on('currentUser', data => {
+  usernameInput.setAttribute("value", data.user);
+  userID.setAttribute("value", data.userID);
+  roomID.setAttribute("value", room);
 });
 
 // Receive room users list from server
